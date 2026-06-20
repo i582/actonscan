@@ -113,10 +113,14 @@ async function getAccountPreview(address, env, includeImage = false) {
   }
 
   try {
-    const [accountStates, jettonMasters] = await Promise.all([
-      fetchToncenterJson("/accountStates", {address, include_boc: "false"}, env),
-      fetchToncenterJson("/jetton/masters", {address}, env),
-    ])
+    const accountStates = await fetchToncenterJson(
+      "/accountStates",
+      {address, include_boc: "false"},
+      env,
+    )
+    const jettonMasters = await fetchToncenterJson("/jetton/masters", {address}, env).catch(
+      () => undefined,
+    )
     const preview = previewFromResponses(address, accountStates, jettonMasters)
     if (!includeImage || !preview.image) {
       return preview
