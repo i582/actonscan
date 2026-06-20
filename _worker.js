@@ -294,6 +294,10 @@ function formatAccountType(interfaces, jettonMaster) {
   if (interfaces?.includes?.("nft_collection")) {
     return "NFT Collection"
   }
+  const wallet = interfaces?.find?.(iface => /^wallet_v\d+r\d+$/i.test(iface))
+  if (wallet) {
+    return wallet.replace(/^wallet_/i, "wallet ")
+  }
   return undefined
 }
 
