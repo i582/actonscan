@@ -37,7 +37,7 @@ export default {
 }
 
 function shouldInjectHtml(request, response) {
-  if (request.method !== "GET" || response.status >= 400) {
+  if (request.method !== "GET") {
     return false
   }
   return response.headers.get("content-type")?.includes("text/html") ?? false
