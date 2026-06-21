@@ -1,3 +1,5 @@
+const OG_IMAGE_VERSION = "2"
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url)
@@ -52,7 +54,10 @@ async function getRouteMetadata(url, env) {
   const preview = await getAccountPreview(address, env)
   const title = `${preview.title} · actonscan`
   const description = `${preview.subtitle} ${preview.shortAddress} on actonscan.`
-  const image = absoluteUrl(url, `/og/account.svg?address=${encodeURIComponent(address)}`)
+  const image = absoluteUrl(
+    url,
+    `/og/account.svg?address=${encodeURIComponent(address)}&v=${OG_IMAGE_VERSION}`,
+  )
   return {title, description, image, url: url.href}
 }
 
