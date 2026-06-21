@@ -1,8 +1,22 @@
+import {Resvg, initWasm} from "./resvg/index.mjs"
+
 const OG_IMAGE_VERSION = "2"
+let resvgWasmPromise
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url)
+
+    if (url.pathname === "/og/account.png") {
+      const preview = await getAccountPreview(url.searchParams.get("address") || "", env, true)
+      const png = await renderAccountOgPng(preview, request.url, env)
+      return new Response(png, {
+        headers: {
+          "content-type": "image/png",
+          "cache-control": "public, max-age=14400",
+        },
+      })
+    }
 
     if (url.pathname === "/og/account.svg") {
       const preview = await getAccountPreview(url.searchParams.get("address") || "", env, true)
@@ -56,7 +70,7 @@ async function getRouteMetadata(url, env) {
   const description = `${preview.subtitle} ${preview.shortAddress} on actonscan.`
   const image = absoluteUrl(
     url,
-    `/og/account.svg?address=${encodeURIComponent(address)}&v=${OG_IMAGE_VERSION}`,
+    `/og/account.png?address=${encodeURIComponent(address)}&v=${OG_IMAGE_VERSION}`,
   )
   return {title, description, image, url: url.href}
 }
@@ -256,6 +270,26 @@ function renderAccountOgSvg(preview) {
   <rect x="90" y="492" width="286" height="62" rx="31" fill="#252527" stroke="#4A4A4D" stroke-width="2"/>
   <text x="233" y="523" text-anchor="middle" dominant-baseline="middle" fill="#B8B8BE" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="30" font-weight="700">actonscan.com</text>
 </svg>`
+}
+
+async function renderAccountOgPng(preview, requestUrl, env) {
+  await ensureResvgWasm(requestUrl, env)
+  const renderer = new Resvg(renderAccountOgSvg(preview), {
+    fitTo: {
+      mode: "width",
+      value: 1200,
+    },
+  })
+  return renderer.render().asPng()
+}
+
+function ensureResvgWasm(requestUrl, env) {
+  if (!resvgWasmPromise) {
+    const wasmInput =
+      env.RESVG_WASM ?? fetch(new URL("/resvg/index_bg.wasm", requestUrl).toString())
+    resvgWasmPromise = initWasm(wasmInput)
+  }
+  return resvgWasmPromise
 }
 
 function renderAvatar(preview) {
