@@ -6231,7 +6231,7 @@ async function init(input) {
 var __create2, __defProp2, __getOwnPropDesc2, __getOwnPropNames2, __getProtoOf2, __hasOwnProp2, __commonJS2, __export, __copyProps2, __toESM2, require_tiny_inflate, require_swap, require_unicode_trie, require_b64, require_parse, require_walk, require_stringify, require_unit, require_lib, require_camelize, require_colors, require_css_color_keywords, require_css_to_react_native, require_css_background_parser, require_css_box_shadow, U200D, UFE0Fg, apis, languageFontMap, assetCache, loadDynamicAsset, import_unicode_trie, import_base64_js, $557adaaeb0c7885f$exports, $1627905f8be2ef3f$export$fb4028874a74450, $1627905f8be2ef3f$export$1bb1140fe1358b00, $1627905f8be2ef3f$export$f3e416a182673355, $1627905f8be2ef3f$export$24aa617c849a894a, $1627905f8be2ef3f$export$a73c4d14459b698d, $1627905f8be2ef3f$export$9e5d732f3676a9ba, $1627905f8be2ef3f$export$1dff41d5c0caca01, $1627905f8be2ef3f$export$30a74a373318dec6, $1627905f8be2ef3f$export$d710c5f50fc7496a, $1627905f8be2ef3f$export$66498d28055820a9, $1627905f8be2ef3f$export$eb6c6d0b7c8826f2, $1627905f8be2ef3f$export$de92be486109a1df, $1627905f8be2ef3f$export$606cfc2a8896c91f, $1627905f8be2ef3f$export$e51d3c675bb0140d, $1627905f8be2ef3f$export$da51c6332ad11d7b, $1627905f8be2ef3f$export$bea437c40441867d, $1627905f8be2ef3f$export$c4c7eecbfed13dc9, $1627905f8be2ef3f$export$98e1f8a379849661, $32627af916ac1b00$export$98f50d781a474745, $32627af916ac1b00$export$12ee1f8f5315ca7e, $32627af916ac1b00$export$e4965ce242860454, $32627af916ac1b00$export$8f14048969dcd45e, $32627af916ac1b00$export$133eb141bf58aff4, $32627af916ac1b00$export$5bdb8ccbf5c57afc, $557adaaeb0c7885f$var$data, $557adaaeb0c7885f$var$classTrie, $557adaaeb0c7885f$var$mapClass, $557adaaeb0c7885f$var$mapFirst, $557adaaeb0c7885f$var$Break, $557adaaeb0c7885f$var$LineBreaker, import_css_to_react_native, import_css_background_parser, import_css_box_shadow, import_postcss_value_parser, emoji_regex_default, u8, u16, u32, fleb, fdeb, clim, freb, _a, fl, revfl, _b, fd, rev, x, i, hMap, flt, i, i, i, i, fdt, i, flrm, fdrm, max, bits, bits16, shft, slc, ec, err, inflt, et, td, tds, cffStandardStrings, cffStandardEncoding, cffExpertEncoding, check, glyphset, typeOffsets, langSysTable, parse, glyf, instructionTable, exec, execGlyph, execComponent, roundSuper, xUnitVector, yUnitVector, HPZero, defaultState, arabicWordCheck, arabicSentenceCheck, SUBSTITUTIONS, latinWordCheck, cmap, TOP_DICT_META, PRIVATE_DICT_META, cff, fvar, attachList, caretValue, ligGlyph, ligCaretList, markGlyphSets, gdef, subtableParsers, gpos, subtableParsers$1, lookupRecordDesc, gsub, head, hhea, hmtx, kern, ltag, loca, maxp, os2, post, decode, eightBitMacEncodings, meta, opentype, opentype_module_default, Gu, mr, ju, Hu, Vu, Yu, gr, C, Zr, _o, Xu, vr, c, So, ko, On, ss, as, An, Ar, zl, Ir, ls, fs, cs, ps, hs, ms, Mn, bs, xs, _s, At, De, le, Nr, qn, Un, Mr, jn, Vn, Xn, $r, Jn, ei, ri, Hs, ui, fi, di, hi, Zs, mi, na, ca, pa, ha, ba, ya, _a2, Sa, Ta, Li, Di, La, Da, Na, za, Ka, Ja, nu, iu, p0, ou, lu, cu, pu, mu, ot, gt, vt, Ju, Zu, el, tl, rl, nl, To, Oo, Eo, Po, ol, al, rn, nn, Lo, Do, fl2, we, $o, cl, vl, bl, qo, kl, Tl, xr, wr, _r, cn, Uo, fn, Ol, Yo, gn, Jo, vn, Er, Ml, _n, kt, Pr, os, Ot, $u, O0, E0, gu, j, Ji, P0, me, R0, ro, ir, Vr, C0, D0, dt, W0, U0, Yr, po, Nn, He, Sn, Fn, Un2, Ln, Dn, Tt2, Wn, mt, Pt, wt2, je, Hn, Me, resvg_wasm_exports, wasm, heap, heap_next, WASM_VECTOR_LEN, cachedUint8Memory0, cachedTextEncoder, encodeString, cachedInt32Memory0, cachedTextDecoder, BBox, RenderedImage, Resvg, dist_default, initialized, initWasm, Resvg2, initializedResvg, initializedYoga, _a3, _b2, isDev, ImageResponse;
 var init_api = __esm({
   "../../../node_modules/.bun/@cloudflare+pages-plugin-vercel-og@0.1.2/node_modules/@cloudflare/pages-plugin-vercel-og/dist/src/api/index.js"() {
-    init_functionsRoutes_0_1429592712055503();
+    init_functionsRoutes_0_5901840009319528();
     __create2 = Object.create;
     __defProp2 = Object.defineProperty;
     __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -20403,7 +20403,7 @@ var init_data_abis = __esm({
 var require_react_jsx_runtime_production = __commonJS({
   "../../../node_modules/.bun/react@19.2.4/node_modules/react/cjs/react-jsx-runtime.production.js"(exports2) {
     "use strict";
-    init_functionsRoutes_0_1429592712055503();
+    init_functionsRoutes_0_5901840009319528();
     var REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.transitional.element");
     var REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for("react.fragment");
     function jsxProd(type, config, maybeKey) {
@@ -20435,7 +20435,7 @@ var require_react_jsx_runtime_production = __commonJS({
 var require_jsx_runtime = __commonJS({
   "../../../node_modules/.bun/react@19.2.4/node_modules/react/jsx-runtime.js"(exports2, module) {
     "use strict";
-    init_functionsRoutes_0_1429592712055503();
+    init_functionsRoutes_0_5901840009319528();
     if (true) {
       module.exports = require_react_jsx_runtime_production();
     } else {
@@ -20445,7 +20445,11 @@ var require_jsx_runtime = __commonJS({
 });
 
 // ../src/og/AccountOgImage.tsx
-function AccountOgImage({ preview }) {
+function AccountOgImage({
+  preview,
+  variant = "account"
+}) {
+  const isPagePreview = variant === "page";
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
     "div",
     {
@@ -20460,7 +20464,7 @@ function AccountOgImage({ preview }) {
         fontFamily: "sans serif"
       },
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        !isPagePreview && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
           "div",
           {
             style: {
@@ -20561,12 +20565,13 @@ function AccountOgImage({ preview }) {
                         style: {
                           display: "flex",
                           flexDirection: "column",
-                          marginTop: 30,
+                          marginTop: isPagePreview ? 48 : 30,
+                          marginLeft: isPagePreview ? -208 : 0,
                           color: "#f0f0f2",
-                          fontSize: 31,
+                          fontSize: isPagePreview ? 38 : 31,
                           fontWeight: 700,
-                          lineHeight: 1.2,
-                          maxWidth: 780
+                          lineHeight: isPagePreview ? 1.25 : 1.2,
+                          maxWidth: isPagePreview ? 980 : 780
                         },
                         children: wrapText(preview.detail, preview.detailLines ?? 3, 43).map((line, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { display: "flex" }, children: line }, index))
                       }
@@ -20712,13 +20717,135 @@ var import_jsx_runtime;
 var init_AccountOgImage = __esm({
   "../src/og/AccountOgImage.tsx"() {
     "use strict";
-    init_functionsRoutes_0_1429592712055503();
+    init_functionsRoutes_0_5901840009319528();
     import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
     __name(AccountOgImage, "AccountOgImage");
     __name(Avatar, "Avatar");
     __name(Badge, "Badge");
     __name(truncateText, "truncateText");
     __name(wrapText, "wrapText");
+  }
+});
+
+// ../src/og/PageOgImage.tsx
+function pageOgPreviewForKey(key) {
+  return PAGE_OG_PREVIEWS[key] ?? PAGE_OG_PREVIEWS.home;
+}
+function pageOgPreviewForPath(pathname) {
+  const normalizedPath = normalizePath(pathname);
+  if (normalizedPath === "/") return PAGE_OG_PREVIEWS.home;
+  if (normalizedPath === "/blocks") return PAGE_OG_PREVIEWS.blocks;
+  if (normalizedPath === "/abi") return PAGE_OG_PREVIEWS.abi;
+  if (normalizedPath === "/sources") return PAGE_OG_PREVIEWS.sources;
+  if (normalizedPath === "/cell") return PAGE_OG_PREVIEWS.cell;
+  if (normalizedPath === "/emulate") return PAGE_OG_PREVIEWS.emulate;
+  if (normalizedPath === "/favorites") return PAGE_OG_PREVIEWS.favorites;
+  if (/^\/block\/-?\d+\/[^/]+\/\d+$/.test(normalizedPath)) return PAGE_OG_PREVIEWS.block;
+  if (/^\/tx\/[^/]+(?:\/trace)?$/.test(normalizedPath)) return PAGE_OG_PREVIEWS.transaction;
+  return void 0;
+}
+function PageOgImage({ preview }) {
+  const accountStylePreview = {
+    title: preview.title,
+    subtitle: preview.badge,
+    shortAddress: "",
+    rawAddress: "",
+    type: preview.badge,
+    detail: preview.description,
+    detailLines: 2,
+    avatarText: ""
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(AccountOgImage, { preview: accountStylePreview, variant: "page" });
+}
+function normalizePath(pathname) {
+  if (pathname === "/") return pathname;
+  return pathname.replace(/\/+$/, "") || "/";
+}
+var import_jsx_runtime2, PAGE_OG_PREVIEWS;
+var init_PageOgImage = __esm({
+  "../src/og/PageOgImage.tsx"() {
+    "use strict";
+    init_functionsRoutes_0_5901840009319528();
+    init_AccountOgImage();
+    import_jsx_runtime2 = __toESM(require_jsx_runtime(), 1);
+    PAGE_OG_PREVIEWS = {
+      home: {
+        key: "home",
+        title: "actonscan",
+        badge: "TON explorer",
+        description: "Accounts, transactions, blocks, tokens and collectibles",
+        metadataTitle: "actonscan \xB7 TON explorer",
+        metadataDescription: "Open-source TON explorer for accounts, transactions, blocks, tokens, and collectibles."
+      },
+      blocks: {
+        key: "blocks",
+        title: "Blocks",
+        badge: "Network",
+        description: "Follow masterchain and shardchain activity as TON moves, block by block",
+        metadataTitle: "TON blocks \xB7 actonscan",
+        metadataDescription: "Browse recent TON masterchain and shardchain blocks on actonscan."
+      },
+      block: {
+        key: "block",
+        title: "Block",
+        badge: "Block details",
+        description: "See every transaction and message behind the block",
+        metadataTitle: "TON block \xB7 actonscan",
+        metadataDescription: "Inspect a TON block, its transactions, and messages on actonscan."
+      },
+      abi: {
+        key: "abi",
+        title: "ABI",
+        badge: "Contract interfaces",
+        description: "Understand contracts through their messages, methods and errors",
+        metadataTitle: "TON ABI catalog \xB7 actonscan",
+        metadataDescription: "Browse known TON contract interfaces, messages, methods, and error codes on actonscan."
+      },
+      sources: {
+        key: "sources",
+        title: "Sources",
+        badge: "Verified code",
+        description: "Read the verified code behind on-chain contracts",
+        metadataTitle: "Verified TON sources \xB7 actonscan",
+        metadataDescription: "Browse verified TON smart-contract source code on actonscan."
+      },
+      cell: {
+        key: "cell",
+        title: "Cell Inspector",
+        badge: "BOC tools",
+        description: "Turn raw BOCs into a graph you can actually explore",
+        metadataTitle: "TON Cell Inspector \xB7 actonscan",
+        metadataDescription: "Decode TON BOCs and inspect their cell graphs on actonscan."
+      },
+      emulate: {
+        key: "emulate",
+        title: "Emulate",
+        badge: "Transaction tools",
+        description: "Test TON messages against chain state before sending",
+        metadataTitle: "Emulate TON transactions \xB7 actonscan",
+        metadataDescription: "Build and emulate TON messages against chain state on actonscan."
+      },
+      favorites: {
+        key: "favorites",
+        title: "Favorites",
+        badge: "Watchlist",
+        description: "Keep the accounts and contracts you care about close",
+        metadataTitle: "Favorite TON accounts \xB7 actonscan",
+        metadataDescription: "Open your saved TON accounts and contracts on actonscan."
+      },
+      transaction: {
+        key: "transaction",
+        title: "Transaction",
+        badge: "Execution details",
+        description: "Follow every message, phase, fee and state change",
+        metadataTitle: "TON transaction \xB7 actonscan",
+        metadataDescription: "Inspect a TON transaction, messages, fees, and state changes on actonscan."
+      }
+    };
+    __name(pageOgPreviewForKey, "pageOgPreviewForKey");
+    __name(pageOgPreviewForPath, "pageOgPreviewForPath");
+    __name(PageOgImage, "PageOgImage");
+    __name(normalizePath, "normalizePath");
   }
 });
 
@@ -20730,6 +20857,9 @@ async function onRequest(context) {
   }
   if (url.pathname === "/og/abi.png") {
     return renderAbiOgPng(context);
+  }
+  if (url.pathname === "/og/page.png") {
+    return renderPageOgPng(context);
   }
   const metadata = await getRouteMetadata(url, context.env);
   const assetResponse = await context.next();
@@ -20750,7 +20880,7 @@ async function onRequest(context) {
 async function renderAccountOgPng(context) {
   const url = new URL(context.request.url);
   const preview = await getAccountPreview(url.searchParams.get("address") || "", context.env, true);
-  const image = new ImageResponse(/* @__PURE__ */ (0, import_jsx_runtime2.jsx)(AccountOgImage, { preview }), {
+  const image = new ImageResponse(/* @__PURE__ */ (0, import_jsx_runtime3.jsx)(AccountOgImage, { preview }), {
     width: OG_IMAGE_WIDTH,
     height: OG_IMAGE_HEIGHT,
     headers: {
@@ -20768,7 +20898,7 @@ async function renderAccountOgPng(context) {
 async function renderAbiOgPng(context) {
   const url = new URL(context.request.url);
   const preview = getAbiPreview(url.searchParams.get("slug") || "");
-  const image = new ImageResponse(/* @__PURE__ */ (0, import_jsx_runtime2.jsx)(AccountOgImage, { preview }), {
+  const image = new ImageResponse(/* @__PURE__ */ (0, import_jsx_runtime3.jsx)(AccountOgImage, { preview }), {
     width: OG_IMAGE_WIDTH,
     height: OG_IMAGE_HEIGHT,
     headers: {
@@ -20783,6 +20913,24 @@ async function renderAbiOgPng(context) {
     }
   });
 }
+async function renderPageOgPng(context) {
+  const url = new URL(context.request.url);
+  const preview = pageOgPreviewForKey(url.searchParams.get("page") || "home");
+  const image = new ImageResponse(/* @__PURE__ */ (0, import_jsx_runtime3.jsx)(PageOgImage, { preview }), {
+    width: OG_IMAGE_WIDTH,
+    height: OG_IMAGE_HEIGHT,
+    headers: {
+      "cache-control": "public, max-age=86400"
+    }
+  });
+  const bytes = await image.arrayBuffer();
+  return new Response(bytes, {
+    headers: {
+      "content-type": "image/png",
+      "cache-control": "public, max-age=86400"
+    }
+  });
+}
 function shouldInjectHtml(request, response) {
   if (request.method !== "GET") {
     return false;
@@ -20790,6 +20938,19 @@ function shouldInjectHtml(request, response) {
   return response.headers.get("content-type")?.includes("text/html") ?? false;
 }
 async function getRouteMetadata(url, env) {
+  const pagePreview = pageOgPreviewForPath(url.pathname);
+  if (pagePreview) {
+    const image2 = absoluteUrl(
+      url,
+      `/og/page.png?page=${encodeURIComponent(pagePreview.key)}&v=${OG_IMAGE_VERSION}`
+    );
+    return {
+      title: pagePreview.metadataTitle,
+      description: pagePreview.metadataDescription,
+      image: image2,
+      url: url.href
+    };
+  }
   const abiSlug = abiSlugFromPath(url.pathname);
   if (abiSlug) {
     const preview2 = getAbiPreview(abiSlug);
@@ -21168,22 +21329,24 @@ function withHeader(headers, name, value) {
 function escapeHtml(value) {
   return value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 }
-var import_jsx_runtime2, OG_IMAGE_VERSION, OG_IMAGE_WIDTH, OG_IMAGE_HEIGHT, ABI_CATALOG;
+var import_jsx_runtime3, OG_IMAGE_VERSION, OG_IMAGE_WIDTH, OG_IMAGE_HEIGHT, ABI_CATALOG;
 var init_path = __esm({
   "[[path]].tsx"() {
     "use strict";
-    init_functionsRoutes_0_1429592712055503();
+    init_functionsRoutes_0_5901840009319528();
     init_api();
     init_data_abis();
     init_AccountOgImage();
-    import_jsx_runtime2 = __toESM(require_jsx_runtime(), 1);
-    OG_IMAGE_VERSION = "5";
+    init_PageOgImage();
+    import_jsx_runtime3 = __toESM(require_jsx_runtime(), 1);
+    OG_IMAGE_VERSION = "6";
     OG_IMAGE_WIDTH = 1200;
     OG_IMAGE_HEIGHT = 630;
     ABI_CATALOG = data_abis_default;
     __name(onRequest, "onRequest");
     __name(renderAccountOgPng, "renderAccountOgPng");
     __name(renderAbiOgPng, "renderAbiOgPng");
+    __name(renderPageOgPng, "renderPageOgPng");
     __name(shouldInjectHtml, "shouldInjectHtml");
     __name(getRouteMetadata, "getRouteMetadata");
     __name(abiSlugFromPath, "abiSlugFromPath");
@@ -21221,10 +21384,10 @@ var init_path = __esm({
   }
 });
 
-// ../.wrangler/tmp/pages-ATQj2d/functionsRoutes-0.1429592712055503.mjs
+// ../.wrangler/tmp/pages-JzaYgV/functionsRoutes-0.5901840009319528.mjs
 var routes;
-var init_functionsRoutes_0_1429592712055503 = __esm({
-  "../.wrangler/tmp/pages-ATQj2d/functionsRoutes-0.1429592712055503.mjs"() {
+var init_functionsRoutes_0_5901840009319528 = __esm({
+  "../.wrangler/tmp/pages-JzaYgV/functionsRoutes-0.5901840009319528.mjs"() {
     "use strict";
     init_path();
     routes = [
@@ -21240,10 +21403,10 @@ var init_functionsRoutes_0_1429592712055503 = __esm({
 });
 
 // ../../../node_modules/.bun/wrangler@4.100.0/node_modules/wrangler/templates/pages-template-worker.ts
-init_functionsRoutes_0_1429592712055503();
+init_functionsRoutes_0_5901840009319528();
 
 // ../../../node_modules/.bun/path-to-regexp@6.3.0/node_modules/path-to-regexp/dist.es2015/index.js
-init_functionsRoutes_0_1429592712055503();
+init_functionsRoutes_0_5901840009319528();
 function lexer(str) {
   var tokens = [];
   var i2 = 0;
