@@ -28,6 +28,213 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
+// api/toncenter/[network]/v3/traces.ts
+async function onRequest(context) {
+  if (context.request.method !== "GET") {
+    return jsonError(405, "Method not allowed", { allow: "GET" });
+  }
+  const network = parseNetwork(context.params.network);
+  if (!network) {
+    return jsonError(404, "Unknown TON network");
+  }
+  const requestUrl = new URL(context.request.url);
+  const validationError = validateSearchParams(requestUrl.searchParams);
+  if (validationError) {
+    return jsonError(400, validationError);
+  }
+  const transactionHash = requestUrl.searchParams.get("tx_hash")?.toLowerCase();
+  if (!transactionHash || !TRANSACTION_HASH_PATTERN.test(transactionHash)) {
+    return jsonError(400, "tx_hash must be a 64-character hexadecimal transaction hash");
+  }
+  const includeActions = requestUrl.searchParams.get("include_actions") === "true";
+  const cacheKey = createCacheKey(requestUrl, transactionHash, includeActions);
+  const edgeCache = defaultEdgeCache();
+  const cached = await matchCache(edgeCache, cacheKey);
+  if (cached) {
+    return withProxyHeaders(cached, "HIT", 'edge;desc="HIT"');
+  }
+  const upstreamUrl = createUpstreamUrl(context.env, network, transactionHash, includeActions);
+  if (!upstreamUrl) {
+    return jsonError(500, `Toncenter ${network} API URL is invalid`);
+  }
+  const startedAt = performance.now();
+  let upstream;
+  try {
+    upstream = await fetch(upstreamUrl, { headers: toncenterHeaders(context.env, network) });
+  } catch {
+    return jsonError(502, "Toncenter request failed", {
+      "server-timing": toncenterTiming(startedAt)
+    });
+  }
+  const body = await upstream.text();
+  let payload;
+  try {
+    payload = JSON.parse(body);
+  } catch {
+    return jsonError(502, "Toncenter returned an invalid JSON response", {
+      "server-timing": toncenterTiming(startedAt)
+    });
+  }
+  const cacheable = upstream.ok && isCompleteTraceResponse(payload);
+  const responseHeaders = new Headers({
+    "cache-control": cacheable ? COMPLETE_TRACE_CACHE_CONTROL : "no-store",
+    "content-type": "application/json; charset=utf-8"
+  });
+  const retryAfter = upstream.headers.get("retry-after");
+  if (retryAfter) {
+    responseHeaders.set("retry-after", retryAfter);
+  }
+  const response = new Response(body, {
+    status: upstream.status,
+    statusText: upstream.statusText,
+    headers: responseHeaders
+  });
+  const cacheStatus = edgeCache ? "MISS" : "BYPASS";
+  const result = withProxyHeaders(response, cacheStatus, toncenterTiming(startedAt));
+  if (cacheable && edgeCache) {
+    context.waitUntil(edgeCache.put(cacheKey, result.clone()).catch(() => void 0));
+  }
+  return result;
+}
+function parseNetwork(value) {
+  const network = Array.isArray(value) ? value[0] : value;
+  return network === "mainnet" || network === "testnet" ? network : void 0;
+}
+function validateSearchParams(searchParams) {
+  for (const key of searchParams.keys()) {
+    if (key !== "tx_hash" && key !== "include_actions") {
+      return `Unsupported query parameter: ${key}`;
+    }
+  }
+  if (searchParams.getAll("tx_hash").length !== 1) {
+    return "Exactly one tx_hash query parameter is required";
+  }
+  const includeActions = searchParams.getAll("include_actions");
+  if (includeActions.length > 1 || includeActions.length === 1 && includeActions[0] !== "true") {
+    return "include_actions must be true when provided";
+  }
+  return void 0;
+}
+function createCacheKey(requestUrl, transactionHash, includeActions) {
+  const cacheUrl = new URL(requestUrl.origin + requestUrl.pathname);
+  cacheUrl.searchParams.set("tx_hash", transactionHash);
+  if (includeActions) {
+    cacheUrl.searchParams.set("include_actions", "true");
+  }
+  return new Request(cacheUrl);
+}
+function createUpstreamUrl(env, network, transactionHash, includeActions) {
+  try {
+    const baseUrl = toncenterApiV3Url(env, network);
+    const url = new URL(`${baseUrl.replace(/\/$/, "")}/traces`);
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      return void 0;
+    }
+    url.searchParams.set("tx_hash", transactionHash);
+    if (includeActions) {
+      url.searchParams.set("include_actions", "true");
+    }
+    return url;
+  } catch {
+    return void 0;
+  }
+}
+function toncenterApiV3Url(env, network) {
+  if (network === "testnet") {
+    return env.TONCENTER_TESTNET_API_V3_URL?.trim() || env.VITE_EXPLORER_TESTNET_TONCENTER_API_V3_URL?.trim() || "https://testnet.toncenter.com/api/v3";
+  }
+  return env.TONCENTER_MAINNET_API_V3_URL?.trim() || env.TONCENTER_API_V3_URL?.trim() || env.VITE_EXPLORER_MAINNET_TONCENTER_API_V3_URL?.trim() || env.VITE_EXPLORER_TONCENTER_API_V3_URL?.trim() || "https://toncenter.com/api/v3";
+}
+function toncenterApiKey(env, network) {
+  if (network === "testnet") {
+    return env.TONCENTER_TESTNET_API_KEY?.trim() || env.VITE_EXPLORER_TESTNET_TONCENTER_API_KEY?.trim() || void 0;
+  }
+  return env.TONCENTER_MAINNET_API_KEY?.trim() || env.TONCENTER_API_KEY?.trim() || env.VITE_EXPLORER_MAINNET_TONCENTER_API_KEY?.trim() || env.VITE_EXPLORER_TONCENTER_API_KEY?.trim() || void 0;
+}
+function toncenterHeaders(env, network) {
+  const headers = new Headers({ accept: "application/json" });
+  const apiKey = toncenterApiKey(env, network);
+  if (apiKey) {
+    headers.set("X-API-Key", apiKey);
+  }
+  return headers;
+}
+function isCompleteTraceResponse(value) {
+  if (!value || typeof value !== "object" || !("traces" in value)) {
+    return false;
+  }
+  const traces = value.traces;
+  if (!Array.isArray(traces) || traces.length === 0) {
+    return false;
+  }
+  return traces.every((trace) => {
+    if (!isRecord(trace)) {
+      return false;
+    }
+    const candidate = trace;
+    return candidate.is_incomplete === false && candidate.trace_info?.pending_messages === 0;
+  });
+}
+function isRecord(value) {
+  return typeof value === "object" && value !== null;
+}
+function defaultEdgeCache() {
+  const cacheStorage = globalThis.caches;
+  return cacheStorage?.default;
+}
+function matchCache(edgeCache, cacheKey) {
+  return edgeCache ? edgeCache.match(cacheKey).catch(() => void 0) : void 0;
+}
+function withProxyHeaders(response, cacheStatus, serverTiming) {
+  const headers = new Headers(response.headers);
+  headers.set("server-timing", serverTiming);
+  headers.set("x-actonscan-cache", cacheStatus);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  });
+}
+function toncenterTiming(startedAt) {
+  return `toncenter;dur=${Math.max(0, performance.now() - startedAt).toFixed(1)}`;
+}
+function jsonError(status, error, headers) {
+  return Response.json(
+    { error },
+    {
+      status,
+      headers: {
+        "cache-control": "no-store",
+        ...Object.fromEntries(new Headers(headers))
+      }
+    }
+  );
+}
+var TRANSACTION_HASH_PATTERN, COMPLETE_TRACE_CACHE_CONTROL;
+var init_traces = __esm({
+  "api/toncenter/[network]/v3/traces.ts"() {
+    "use strict";
+    init_functionsRoutes_0_5906916554904444();
+    TRANSACTION_HASH_PATTERN = /^[0-9a-f]{64}$/i;
+    COMPLETE_TRACE_CACHE_CONTROL = "public, max-age=60, s-maxage=3600";
+    __name(onRequest, "onRequest");
+    __name(parseNetwork, "parseNetwork");
+    __name(validateSearchParams, "validateSearchParams");
+    __name(createCacheKey, "createCacheKey");
+    __name(createUpstreamUrl, "createUpstreamUrl");
+    __name(toncenterApiV3Url, "toncenterApiV3Url");
+    __name(toncenterApiKey, "toncenterApiKey");
+    __name(toncenterHeaders, "toncenterHeaders");
+    __name(isCompleteTraceResponse, "isCompleteTraceResponse");
+    __name(isRecord, "isRecord");
+    __name(defaultEdgeCache, "defaultEdgeCache");
+    __name(matchCache, "matchCache");
+    __name(withProxyHeaders, "withProxyHeaders");
+    __name(toncenterTiming, "toncenterTiming");
+    __name(jsonError, "jsonError");
+  }
+});
+
 // ../../../node_modules/.bun/@cloudflare+pages-plugin-vercel-og@0.1.2/node_modules/@cloudflare/pages-plugin-vercel-og/dist/src/api/index.js
 import resvg_wasm from "./a7e702bc5ba9227243abda7977c8096f59478d3f-resvg.wasm";
 import yoga_wasm from "./ea9ee43a5ee9b2e1cd270fa43980822c06dc5bf2-yoga.wasm";
@@ -6231,7 +6438,7 @@ async function init(input) {
 var __create2, __defProp2, __getOwnPropDesc2, __getOwnPropNames2, __getProtoOf2, __hasOwnProp2, __commonJS2, __export, __copyProps2, __toESM2, require_tiny_inflate, require_swap, require_unicode_trie, require_b64, require_parse, require_walk, require_stringify, require_unit, require_lib, require_camelize, require_colors, require_css_color_keywords, require_css_to_react_native, require_css_background_parser, require_css_box_shadow, U200D, UFE0Fg, apis, languageFontMap, assetCache, loadDynamicAsset, import_unicode_trie, import_base64_js, $557adaaeb0c7885f$exports, $1627905f8be2ef3f$export$fb4028874a74450, $1627905f8be2ef3f$export$1bb1140fe1358b00, $1627905f8be2ef3f$export$f3e416a182673355, $1627905f8be2ef3f$export$24aa617c849a894a, $1627905f8be2ef3f$export$a73c4d14459b698d, $1627905f8be2ef3f$export$9e5d732f3676a9ba, $1627905f8be2ef3f$export$1dff41d5c0caca01, $1627905f8be2ef3f$export$30a74a373318dec6, $1627905f8be2ef3f$export$d710c5f50fc7496a, $1627905f8be2ef3f$export$66498d28055820a9, $1627905f8be2ef3f$export$eb6c6d0b7c8826f2, $1627905f8be2ef3f$export$de92be486109a1df, $1627905f8be2ef3f$export$606cfc2a8896c91f, $1627905f8be2ef3f$export$e51d3c675bb0140d, $1627905f8be2ef3f$export$da51c6332ad11d7b, $1627905f8be2ef3f$export$bea437c40441867d, $1627905f8be2ef3f$export$c4c7eecbfed13dc9, $1627905f8be2ef3f$export$98e1f8a379849661, $32627af916ac1b00$export$98f50d781a474745, $32627af916ac1b00$export$12ee1f8f5315ca7e, $32627af916ac1b00$export$e4965ce242860454, $32627af916ac1b00$export$8f14048969dcd45e, $32627af916ac1b00$export$133eb141bf58aff4, $32627af916ac1b00$export$5bdb8ccbf5c57afc, $557adaaeb0c7885f$var$data, $557adaaeb0c7885f$var$classTrie, $557adaaeb0c7885f$var$mapClass, $557adaaeb0c7885f$var$mapFirst, $557adaaeb0c7885f$var$Break, $557adaaeb0c7885f$var$LineBreaker, import_css_to_react_native, import_css_background_parser, import_css_box_shadow, import_postcss_value_parser, emoji_regex_default, u8, u16, u32, fleb, fdeb, clim, freb, _a, fl, revfl, _b, fd, rev, x, i, hMap, flt, i, i, i, i, fdt, i, flrm, fdrm, max, bits, bits16, shft, slc, ec, err, inflt, et, td, tds, cffStandardStrings, cffStandardEncoding, cffExpertEncoding, check, glyphset, typeOffsets, langSysTable, parse, glyf, instructionTable, exec, execGlyph, execComponent, roundSuper, xUnitVector, yUnitVector, HPZero, defaultState, arabicWordCheck, arabicSentenceCheck, SUBSTITUTIONS, latinWordCheck, cmap, TOP_DICT_META, PRIVATE_DICT_META, cff, fvar, attachList, caretValue, ligGlyph, ligCaretList, markGlyphSets, gdef, subtableParsers, gpos, subtableParsers$1, lookupRecordDesc, gsub, head, hhea, hmtx, kern, ltag, loca, maxp, os2, post, decode, eightBitMacEncodings, meta, opentype, opentype_module_default, Gu, mr, ju, Hu, Vu, Yu, gr, C, Zr, _o, Xu, vr, c, So, ko, On, ss, as, An, Ar, zl, Ir, ls, fs, cs, ps, hs, ms, Mn, bs, xs, _s, At, De, le, Nr, qn, Un, Mr, jn, Vn, Xn, $r, Jn, ei, ri, Hs, ui, fi, di, hi, Zs, mi, na, ca, pa, ha, ba, ya, _a2, Sa, Ta, Li, Di, La, Da, Na, za, Ka, Ja, nu, iu, p0, ou, lu, cu, pu, mu, ot, gt, vt, Ju, Zu, el, tl, rl, nl, To, Oo, Eo, Po, ol, al, rn, nn, Lo, Do, fl2, we, $o, cl, vl, bl, qo, kl, Tl, xr, wr, _r, cn, Uo, fn, Ol, Yo, gn, Jo, vn, Er, Ml, _n, kt, Pr, os, Ot, $u, O0, E0, gu, j, Ji, P0, me, R0, ro, ir, Vr, C0, D0, dt, W0, U0, Yr, po, Nn, He, Sn, Fn, Un2, Ln, Dn, Tt2, Wn, mt, Pt, wt2, je, Hn, Me, resvg_wasm_exports, wasm, heap, heap_next, WASM_VECTOR_LEN, cachedUint8Memory0, cachedTextEncoder, encodeString, cachedInt32Memory0, cachedTextDecoder, BBox, RenderedImage, Resvg, dist_default, initialized, initWasm, Resvg2, initializedResvg, initializedYoga, _a3, _b2, isDev, ImageResponse;
 var init_api = __esm({
   "../../../node_modules/.bun/@cloudflare+pages-plugin-vercel-og@0.1.2/node_modules/@cloudflare/pages-plugin-vercel-og/dist/src/api/index.js"() {
-    init_functionsRoutes_0_6410950544732421();
+    init_functionsRoutes_0_5906916554904444();
     __create2 = Object.create;
     __defProp2 = Object.defineProperty;
     __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -20403,7 +20610,7 @@ var init_data_abis = __esm({
 var require_react_jsx_runtime_production = __commonJS({
   "../../../node_modules/.bun/react@19.2.4/node_modules/react/cjs/react-jsx-runtime.production.js"(exports2) {
     "use strict";
-    init_functionsRoutes_0_6410950544732421();
+    init_functionsRoutes_0_5906916554904444();
     var REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.transitional.element");
     var REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for("react.fragment");
     function jsxProd(type, config, maybeKey) {
@@ -20435,7 +20642,7 @@ var require_react_jsx_runtime_production = __commonJS({
 var require_jsx_runtime = __commonJS({
   "../../../node_modules/.bun/react@19.2.4/node_modules/react/jsx-runtime.js"(exports2, module) {
     "use strict";
-    init_functionsRoutes_0_6410950544732421();
+    init_functionsRoutes_0_5906916554904444();
     if (true) {
       module.exports = require_react_jsx_runtime_production();
     } else {
@@ -20717,7 +20924,7 @@ var import_jsx_runtime;
 var init_AccountOgImage = __esm({
   "../src/og/AccountOgImage.tsx"() {
     "use strict";
-    init_functionsRoutes_0_6410950544732421();
+    init_functionsRoutes_0_5906916554904444();
     import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
     __name(AccountOgImage, "AccountOgImage");
     __name(Avatar, "Avatar");
@@ -20768,7 +20975,7 @@ var import_jsx_runtime2, PAGE_OG_PREVIEWS;
 var init_PageOgImage = __esm({
   "../src/og/PageOgImage.tsx"() {
     "use strict";
-    init_functionsRoutes_0_6410950544732421();
+    init_functionsRoutes_0_5906916554904444();
     init_AccountOgImage();
     import_jsx_runtime2 = __toESM(require_jsx_runtime(), 1);
     PAGE_OG_PREVIEWS = {
@@ -20877,7 +21084,7 @@ var init_PageOgImage = __esm({
 });
 
 // [[path]].tsx
-async function onRequest(context) {
+async function onRequest2(context) {
   const url = new URL(context.request.url);
   if (url.pathname === "/og/account.png") {
     return renderAccountOgPng(context);
@@ -21231,8 +21438,8 @@ function previewFromResponses(address, accountStates, jettonMasters) {
   const jettonMaster = recordValue(jettonMasterRecords?.[0]);
   const tokenInfo = tokenInfoForAddress(recordValue(accountStates.metadata), accountAddress) || tokenInfoForAddress(recordValue(jettonMasters?.metadata), accountAddress);
   const jettonContent = {
-    ...isRecord(jettonMaster?.jetton_content) ? jettonMaster.jetton_content : {},
-    ...isRecord(tokenInfo?.extra) ? tokenInfo.extra : {}
+    ...isRecord2(jettonMaster?.jetton_content) ? jettonMaster.jetton_content : {},
+    ...isRecord2(tokenInfo?.extra) ? tokenInfo.extra : {}
   };
   const name = stringValue(jettonContent.name) || stringValue(tokenInfo?.name) || stringValue(addressBook?.domain) || fallback.title;
   const symbol = stringValue(jettonContent.symbol) || stringValue(tokenInfo?.symbol);
@@ -21334,12 +21541,12 @@ function isDataImage(value) {
   return value.startsWith("data:image/");
 }
 function recordValue(value) {
-  return isRecord(value) ? value : void 0;
+  return isRecord2(value) ? value : void 0;
 }
 function arrayValue(value) {
   return Array.isArray(value) ? value : void 0;
 }
-function isRecord(value) {
+function isRecord2(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 function stringValue(value) {
@@ -21360,7 +21567,7 @@ var import_jsx_runtime3, OG_IMAGE_VERSION, OG_IMAGE_WIDTH, OG_IMAGE_HEIGHT, ABI_
 var init_path = __esm({
   "[[path]].tsx"() {
     "use strict";
-    init_functionsRoutes_0_6410950544732421();
+    init_functionsRoutes_0_5906916554904444();
     init_api();
     init_data_abis();
     init_AccountOgImage();
@@ -21370,7 +21577,7 @@ var init_path = __esm({
     OG_IMAGE_WIDTH = 1200;
     OG_IMAGE_HEIGHT = 630;
     ABI_CATALOG = data_abis_default;
-    __name(onRequest, "onRequest");
+    __name(onRequest2, "onRequest");
     __name(renderAccountOgPng, "renderAccountOgPng");
     __name(renderAbiOgPng, "renderAbiOgPng");
     __name(renderPageOgPng, "renderPageOgPng");
@@ -21403,7 +21610,7 @@ var init_path = __esm({
     __name(isDataImage, "isDataImage");
     __name(recordValue, "recordValue");
     __name(arrayValue, "arrayValue");
-    __name(isRecord, "isRecord");
+    __name(isRecord2, "isRecord");
     __name(stringValue, "stringValue");
     __name(absoluteUrl, "absoluteUrl");
     __name(withHeader, "withHeader");
@@ -21411,29 +21618,37 @@ var init_path = __esm({
   }
 });
 
-// ../.wrangler/tmp/pages-vLMqiu/functionsRoutes-0.6410950544732421.mjs
+// ../.wrangler/tmp/pages-tMlAv9/functionsRoutes-0.5906916554904444.mjs
 var routes;
-var init_functionsRoutes_0_6410950544732421 = __esm({
-  "../.wrangler/tmp/pages-vLMqiu/functionsRoutes-0.6410950544732421.mjs"() {
+var init_functionsRoutes_0_5906916554904444 = __esm({
+  "../.wrangler/tmp/pages-tMlAv9/functionsRoutes-0.5906916554904444.mjs"() {
     "use strict";
+    init_traces();
     init_path();
     routes = [
+      {
+        routePath: "/api/toncenter/:network/v3/traces",
+        mountPath: "/api/toncenter/:network/v3",
+        method: "",
+        middlewares: [],
+        modules: [onRequest]
+      },
       {
         routePath: "/:path*",
         mountPath: "/",
         method: "",
         middlewares: [],
-        modules: [onRequest]
+        modules: [onRequest2]
       }
     ];
   }
 });
 
 // ../../../node_modules/.bun/wrangler@4.100.0+acbd2503149e7860/node_modules/wrangler/templates/pages-template-worker.ts
-init_functionsRoutes_0_6410950544732421();
+init_functionsRoutes_0_5906916554904444();
 
 // ../../../node_modules/.bun/path-to-regexp@6.3.0/node_modules/path-to-regexp/dist.es2015/index.js
-init_functionsRoutes_0_6410950544732421();
+init_functionsRoutes_0_5906916554904444();
 function lexer(str) {
   var tokens = [];
   var i2 = 0;
