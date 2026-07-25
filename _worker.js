@@ -209,7 +209,7 @@ var HISTORICAL_DATA_CACHE_CONTROL, INT32_MIN, INT32_MAX, INT64_MAX;
 var init_toncenterProxy = __esm({
   "../worker/toncenterProxy.ts"() {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     HISTORICAL_DATA_CACHE_CONTROL = "public, max-age=300, s-maxage=604800, immutable";
     INT32_MIN = -2147483648n;
     INT32_MAX = 2147483647n;
@@ -265,7 +265,7 @@ function isNonEmptyShardsResponse(value) {
 var init_getShards = __esm({
   "api/toncenter/[network]/v2/getShards.ts"() {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     init_toncenterProxy();
     __name(onRequest, "onRequest");
     __name(isNonEmptyShardsResponse, "isNonEmptyShardsResponse");
@@ -356,7 +356,7 @@ var LATEST_BLOCKS_CACHE_CONTROL, BLOCK_PARAMETER_NAMES, BLOCK_PARAMETER_SET;
 var init_blocks = __esm({
   "api/toncenter/[network]/v3/blocks.ts"() {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     init_toncenterProxy();
     LATEST_BLOCKS_CACHE_CONTROL = "public, max-age=0, s-maxage=2, must-revalidate";
     BLOCK_PARAMETER_NAMES = [
@@ -446,7 +446,7 @@ var TRANSACTION_HASH_PATTERN, COMPLETE_TRACE_CACHE_CONTROL;
 var init_traces = __esm({
   "api/toncenter/[network]/v3/traces.ts"() {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     init_toncenterProxy();
     TRANSACTION_HASH_PATTERN = /^[0-9a-f]{64}$/i;
     COMPLETE_TRACE_CACHE_CONTROL = "public, max-age=300, s-maxage=604800";
@@ -524,7 +524,7 @@ var TRANSACTION_PARAMETER_NAMES, TRANSACTION_PARAMETER_SET;
 var init_transactions = __esm({
   "api/toncenter/[network]/v3/transactions.ts"() {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     init_toncenterProxy();
     TRANSACTION_PARAMETER_NAMES = ["workchain", "shard", "seqno", "limit"];
     TRANSACTION_PARAMETER_SET = new Set(TRANSACTION_PARAMETER_NAMES);
@@ -544,13 +544,44 @@ function readEmulateNavigationPayload(state) {
   if (payload.inputMode !== "builder" && payload.inputMode !== "raw" || typeof payload.targetAddress !== "string" || typeof payload.sourceAddress !== "string" || typeof payload.messageValue !== "string" || payload.messageTransport !== "internal" && payload.messageTransport !== "external" || typeof payload.bounce !== "boolean" || typeof payload.mcSeqnoInput !== "string" || typeof payload.rawMessage !== "string") {
     return void 0;
   }
-  if (payload.inputMode === "builder" && (!isRecord2(payload.builder) || payload.builder.abi !== void 0 && !isContractAbi(payload.builder.abi) || payload.builder.abiSourceMode !== "auto" && payload.builder.abiSourceMode !== "manual" || payload.builder.abiEndpoint !== "destination" && payload.builder.abiEndpoint !== "source" || typeof payload.builder.messageName !== "string" || typeof payload.builder.argsJson !== "string")) {
+  const common = {
+    targetAddress: payload.targetAddress,
+    sourceAddress: payload.sourceAddress,
+    messageValue: payload.messageValue,
+    messageTransport: payload.messageTransport,
+    bounce: payload.bounce,
+    mcSeqnoInput: payload.mcSeqnoInput,
+    rawMessage: payload.rawMessage
+  };
+  if (payload.inputMode === "raw") {
+    return { ...common, inputMode: "raw" };
+  }
+  const builder = payload.builder;
+  if (!isRecord2(builder) || builder.abi !== void 0 && !isContractAbi(builder.abi) || builder.abiSourceMode !== "auto" && builder.abiSourceMode !== "manual" || builder.abiSourceMode === "manual" && builder.abi === void 0 || builder.abiEndpoint !== "destination" && builder.abiEndpoint !== "source" || typeof builder.messageName !== "string" || typeof builder.argsJson !== "string" || !isJson(builder.argsJson)) {
     return void 0;
   }
-  return payload;
+  return {
+    ...common,
+    inputMode: "builder",
+    builder: {
+      abi: builder.abi,
+      abiSourceMode: builder.abiSourceMode,
+      abiEndpoint: builder.abiEndpoint,
+      messageName: builder.messageName,
+      argsJson: builder.argsJson
+    }
+  };
 }
 function isContractAbi(value) {
-  return isRecord2(value) && typeof value.contract_name === "string" && value.contract_name.length > 0 && Array.isArray(value.declarations);
+  return isRecord2(value) && typeof value.contract_name === "string" && value.contract_name.length > 0 && typeof value.compiler_name === "string" && typeof value.compiler_version === "string" && isRecord2(value.storage) && Array.isArray(value.unique_types) && Array.isArray(value.struct_instantiations) && Array.isArray(value.alias_instantiations) && Array.isArray(value.declarations) && Array.isArray(value.incoming_messages) && Array.isArray(value.incoming_external) && Array.isArray(value.outgoing_messages) && Array.isArray(value.emitted_events) && Array.isArray(value.get_methods) && Array.isArray(value.thrown_errors);
+}
+function isJson(value) {
+  try {
+    JSON.parse(value);
+    return true;
+  } catch {
+    return false;
+  }
 }
 function isRecord2(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -558,20 +589,22 @@ function isRecord2(value) {
 var init_emulateNavigationPayload = __esm({
   "../../localnet-ui/src/explorer/pages/emulateNavigationPayload.ts"() {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     __name(readEmulateNavigationPayload, "readEmulateNavigationPayload");
     __name(isContractAbi, "isContractAbi");
+    __name(isJson, "isJson");
     __name(isRecord2, "isRecord");
   }
 });
 
 // ../../localnet-ui/src/explorer/pages/emulateSharing.ts
 function parseSharedEmulation(value) {
-  if (!isRecord3(value) || value.version !== SHARED_EMULATION_VERSION || typeof value.messageBoc !== "string" || !value.messageBoc.trim() || !isRecord3(value.options) || typeof value.options.ignoreChksig !== "boolean" || !isUint32(value.options.mcSeqno) || value.options.now !== void 0 && !isUint32(value.options.now)) {
+  if (!isRecord3(value) || value.version !== SHARED_EMULATION_VERSION || !isRecord3(value.options) || typeof value.options.ignoreChksig !== "boolean" || value.options.now !== void 0 && !isUint32(value.options.now)) {
     return void 0;
   }
   const input = readEmulateNavigationPayload({ emulatePayload: value.input });
-  if (!input) {
+  const mcSeqno = Number(input?.mcSeqnoInput);
+  if (!input?.rawMessage.trim() || !isUint32(mcSeqno) || input.mcSeqnoInput !== String(mcSeqno)) {
     return void 0;
   }
   const accountStateOverrides = parseAccountStateOverrides(value.options.accountStateOverrides);
@@ -580,12 +613,10 @@ function parseSharedEmulation(value) {
   }
   return {
     version: SHARED_EMULATION_VERSION,
-    messageBoc: value.messageBoc.trim(),
     input,
     options: {
       accountStateOverrides,
       ignoreChksig: value.options.ignoreChksig,
-      mcSeqno: value.options.mcSeqno,
       now: value.options.now
     }
   };
@@ -656,7 +687,7 @@ var SHARED_EMULATION_VERSION, MAX_SHARED_ACCOUNT_OVERRIDES, MAX_UINT32;
 var init_emulateSharing = __esm({
   "../../localnet-ui/src/explorer/pages/emulateSharing.ts"() {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     init_emulateNavigationPayload();
     SHARED_EMULATION_VERSION = 1;
     MAX_SHARED_ACCOUNT_OVERRIDES = 64;
@@ -708,7 +739,7 @@ async function createEmulationShareResponse(context, now = Date.now()) {
   }
   const id = crypto.randomUUID();
   const expiresAt = now + EMULATION_SHARE_TTL_MS;
-  const stored = { createdAt: now, expiresAt, emulation };
+  const stored = { expiresAt, emulation };
   try {
     await bucket.put(objectKey(id), JSON.stringify(stored), {
       httpMetadata: { contentType: "application/json; charset=utf-8" },
@@ -765,11 +796,11 @@ async function readEmulationShareResponse(context, now = Date.now()) {
   return jsonResponse({ emulation: stored.emulation, expiresAt: stored.expiresAt });
 }
 function parseStoredEmulationShare(value) {
-  if (!isRecord4(value) || !isTimestamp(value.createdAt) || !isTimestamp(value.expiresAt) || value.expiresAt <= value.createdAt) {
+  if (!isRecord4(value) || !isTimestamp(value.expiresAt)) {
     return void 0;
   }
   const emulation = parseSharedEmulation(value.emulation);
-  return emulation ? { createdAt: value.createdAt, expiresAt: value.expiresAt, emulation } : void 0;
+  return emulation ? { expiresAt: value.expiresAt, emulation } : void 0;
 }
 function objectKey(id) {
   return `${OBJECT_PREFIX}${id}.json`;
@@ -794,7 +825,7 @@ var EMULATION_SHARE_TTL_MS, MAX_REQUEST_BYTES, SHARE_ID_PATTERN, OBJECT_PREFIX;
 var init_emulationShares = __esm({
   "../worker/emulationShares.ts"() {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     init_emulateSharing();
     EMULATION_SHARE_TTL_MS = 30 * 24 * 60 * 60 * 1e3;
     MAX_REQUEST_BYTES = 1024 * 1024;
@@ -818,7 +849,7 @@ function onRequest5(context) {
 var init_id = __esm({
   "api/emulations/[id].ts"() {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     init_emulationShares();
     __name(onRequest5, "onRequest");
   }
@@ -831,7 +862,7 @@ function onRequest6(context) {
 var init_emulations = __esm({
   "api/emulations/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     init_emulationShares();
     __name(onRequest6, "onRequest");
   }
@@ -7040,7 +7071,7 @@ async function init(input) {
 var __create2, __defProp2, __getOwnPropDesc2, __getOwnPropNames2, __getProtoOf2, __hasOwnProp2, __commonJS2, __export, __copyProps2, __toESM2, require_tiny_inflate, require_swap, require_unicode_trie, require_b64, require_parse, require_walk, require_stringify, require_unit, require_lib, require_camelize, require_colors, require_css_color_keywords, require_css_to_react_native, require_css_background_parser, require_css_box_shadow, U200D, UFE0Fg, apis, languageFontMap, assetCache, loadDynamicAsset, import_unicode_trie, import_base64_js, $557adaaeb0c7885f$exports, $1627905f8be2ef3f$export$fb4028874a74450, $1627905f8be2ef3f$export$1bb1140fe1358b00, $1627905f8be2ef3f$export$f3e416a182673355, $1627905f8be2ef3f$export$24aa617c849a894a, $1627905f8be2ef3f$export$a73c4d14459b698d, $1627905f8be2ef3f$export$9e5d732f3676a9ba, $1627905f8be2ef3f$export$1dff41d5c0caca01, $1627905f8be2ef3f$export$30a74a373318dec6, $1627905f8be2ef3f$export$d710c5f50fc7496a, $1627905f8be2ef3f$export$66498d28055820a9, $1627905f8be2ef3f$export$eb6c6d0b7c8826f2, $1627905f8be2ef3f$export$de92be486109a1df, $1627905f8be2ef3f$export$606cfc2a8896c91f, $1627905f8be2ef3f$export$e51d3c675bb0140d, $1627905f8be2ef3f$export$da51c6332ad11d7b, $1627905f8be2ef3f$export$bea437c40441867d, $1627905f8be2ef3f$export$c4c7eecbfed13dc9, $1627905f8be2ef3f$export$98e1f8a379849661, $32627af916ac1b00$export$98f50d781a474745, $32627af916ac1b00$export$12ee1f8f5315ca7e, $32627af916ac1b00$export$e4965ce242860454, $32627af916ac1b00$export$8f14048969dcd45e, $32627af916ac1b00$export$133eb141bf58aff4, $32627af916ac1b00$export$5bdb8ccbf5c57afc, $557adaaeb0c7885f$var$data, $557adaaeb0c7885f$var$classTrie, $557adaaeb0c7885f$var$mapClass, $557adaaeb0c7885f$var$mapFirst, $557adaaeb0c7885f$var$Break, $557adaaeb0c7885f$var$LineBreaker, import_css_to_react_native, import_css_background_parser, import_css_box_shadow, import_postcss_value_parser, emoji_regex_default, u8, u16, u32, fleb, fdeb, clim, freb, _a, fl, revfl, _b, fd, rev, x, i, hMap, flt, i, i, i, i, fdt, i, flrm, fdrm, max, bits, bits16, shft, slc, ec, err, inflt, et, td, tds, cffStandardStrings, cffStandardEncoding, cffExpertEncoding, check, glyphset, typeOffsets, langSysTable, parse, glyf, instructionTable, exec, execGlyph, execComponent, roundSuper, xUnitVector, yUnitVector, HPZero, defaultState, arabicWordCheck, arabicSentenceCheck, SUBSTITUTIONS, latinWordCheck, cmap, TOP_DICT_META, PRIVATE_DICT_META, cff, fvar, attachList, caretValue, ligGlyph, ligCaretList, markGlyphSets, gdef, subtableParsers, gpos, subtableParsers$1, lookupRecordDesc, gsub, head, hhea, hmtx, kern, ltag, loca, maxp, os2, post, decode, eightBitMacEncodings, meta, opentype, opentype_module_default, Gu, mr, ju, Hu, Vu, Yu, gr, C, Zr, _o, Xu, vr, c, So, ko, On, ss, as, An, Ar, zl, Ir, ls, fs, cs, ps, hs, ms, Mn, bs, xs, _s, At, De, le, Nr, qn, Un, Mr, jn, Vn, Xn, $r, Jn, ei, ri, Hs, ui, fi, di, hi, Zs, mi, na, ca, pa, ha, ba, ya, _a2, Sa, Ta, Li, Di, La, Da, Na, za, Ka, Ja, nu, iu, p0, ou, lu, cu, pu, mu, ot, gt, vt, Ju, Zu, el, tl, rl, nl, To, Oo, Eo, Po, ol, al, rn, nn, Lo, Do, fl2, we, $o, cl, vl, bl, qo, kl, Tl, xr, wr, _r, cn, Uo, fn, Ol, Yo, gn, Jo, vn, Er, Ml, _n, kt, Pr, os, Ot, $u, O0, E0, gu, j, Ji, P0, me, R0, ro, ir, Vr, C0, D0, dt, W0, U0, Yr, po, Nn, He, Sn, Fn, Un2, Ln, Dn, Tt2, Wn, mt, Pt, wt2, je, Hn, Me, resvg_wasm_exports, wasm, heap, heap_next, WASM_VECTOR_LEN, cachedUint8Memory0, cachedTextEncoder, encodeString, cachedInt32Memory0, cachedTextDecoder, BBox, RenderedImage, Resvg, dist_default, initialized, initWasm, Resvg2, initializedResvg, initializedYoga, _a3, _b2, isDev, ImageResponse;
 var init_api = __esm({
   "../../../node_modules/.bun/@cloudflare+pages-plugin-vercel-og@0.1.2/node_modules/@cloudflare/pages-plugin-vercel-og/dist/src/api/index.js"() {
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     __create2 = Object.create;
     __defProp2 = Object.defineProperty;
     __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -21212,7 +21243,7 @@ var init_data_abis = __esm({
 var require_react_jsx_runtime_production = __commonJS({
   "../../../node_modules/.bun/react@19.2.8/node_modules/react/cjs/react-jsx-runtime.production.js"(exports2) {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     var REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.transitional.element");
     var REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for("react.fragment");
     function jsxProd(type, config, maybeKey) {
@@ -21244,7 +21275,7 @@ var require_react_jsx_runtime_production = __commonJS({
 var require_jsx_runtime = __commonJS({
   "../../../node_modules/.bun/react@19.2.8/node_modules/react/jsx-runtime.js"(exports2, module) {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     if (true) {
       module.exports = require_react_jsx_runtime_production();
     } else {
@@ -21526,7 +21557,7 @@ var import_jsx_runtime;
 var init_AccountOgImage = __esm({
   "../src/og/AccountOgImage.tsx"() {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
     __name(AccountOgImage, "AccountOgImage");
     __name(Avatar, "Avatar");
@@ -21578,7 +21609,7 @@ var import_jsx_runtime2, PAGE_OG_PREVIEWS;
 var init_PageOgImage = __esm({
   "../src/og/PageOgImage.tsx"() {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     init_AccountOgImage();
     import_jsx_runtime2 = __toESM(require_jsx_runtime(), 1);
     PAGE_OG_PREVIEWS = {
@@ -22178,7 +22209,7 @@ var import_jsx_runtime3, OG_IMAGE_VERSION, OG_IMAGE_WIDTH, OG_IMAGE_HEIGHT, ABI_
 var init_path = __esm({
   "[[path]].tsx"() {
     "use strict";
-    init_functionsRoutes_0_27688743148238626();
+    init_functionsRoutes_0_9858242800220067();
     init_api();
     init_data_abis();
     init_AccountOgImage();
@@ -22229,10 +22260,10 @@ var init_path = __esm({
   }
 });
 
-// ../.wrangler/tmp/pages-95euDa/functionsRoutes-0.27688743148238626.mjs
+// ../.wrangler/tmp/pages-cFDAxh/functionsRoutes-0.9858242800220067.mjs
 var routes;
-var init_functionsRoutes_0_27688743148238626 = __esm({
-  "../.wrangler/tmp/pages-95euDa/functionsRoutes-0.27688743148238626.mjs"() {
+var init_functionsRoutes_0_9858242800220067 = __esm({
+  "../.wrangler/tmp/pages-cFDAxh/functionsRoutes-0.9858242800220067.mjs"() {
     "use strict";
     init_getShards();
     init_blocks();
@@ -22296,10 +22327,10 @@ var init_functionsRoutes_0_27688743148238626 = __esm({
 });
 
 // ../../../node_modules/.bun/wrangler@4.100.0+acbd2503149e7860/node_modules/wrangler/templates/pages-template-worker.ts
-init_functionsRoutes_0_27688743148238626();
+init_functionsRoutes_0_9858242800220067();
 
 // ../../../node_modules/.bun/path-to-regexp@6.3.0/node_modules/path-to-regexp/dist.es2015/index.js
-init_functionsRoutes_0_27688743148238626();
+init_functionsRoutes_0_9858242800220067();
 function lexer(str) {
   var tokens = [];
   var i2 = 0;
