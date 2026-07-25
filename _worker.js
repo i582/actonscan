@@ -28,8 +28,8 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// ../worker/toncenterV3Proxy.ts
-async function proxyToncenterV3Json(context, { network, endpoint, searchParams, cacheControlFor }) {
+// ../worker/toncenterProxy.ts
+async function proxyToncenterJson(context, { network, version, endpoint, searchParams, cacheControlFor }) {
   const requestUrl = new URL(context.request.url);
   const cacheKey = createCacheKey(requestUrl, searchParams);
   const edgeCache = defaultEdgeCache();
@@ -37,7 +37,13 @@ async function proxyToncenterV3Json(context, { network, endpoint, searchParams, 
   if (cached) {
     return withProxyHeaders(cached, "HIT", 'edge;desc="HIT"');
   }
-  const upstreamUrl = createUpstreamUrl(context.env, network, endpoint, searchParams);
+  const upstreamUrl = createUpstreamUrl(
+    context.env,
+    network,
+    version,
+    endpoint,
+    searchParams
+  );
   if (!upstreamUrl) {
     return jsonError(500, `Toncenter ${network} API URL is invalid`);
   }
@@ -101,9 +107,9 @@ function createCacheKey(requestUrl, searchParams) {
   cacheUrl.search = searchParams.toString();
   return new Request(cacheUrl);
 }
-function createUpstreamUrl(env, network, endpoint, searchParams) {
+function createUpstreamUrl(env, network, version, endpoint, searchParams) {
   try {
-    const baseUrl = toncenterApiV3Url(env, network);
+    const baseUrl = toncenterApiUrl(env, network, version);
     const url = new URL(`${baseUrl.replace(/\/$/, "")}/${endpoint}`);
     if (url.protocol !== "https:" && url.protocol !== "http:") {
       return void 0;
@@ -114,7 +120,13 @@ function createUpstreamUrl(env, network, endpoint, searchParams) {
     return void 0;
   }
 }
-function toncenterApiV3Url(env, network) {
+function toncenterApiUrl(env, network, version) {
+  if (version === "v2") {
+    if (network === "testnet") {
+      return env.TONCENTER_TESTNET_API_V2_URL?.trim() || env.VITE_EXPLORER_TESTNET_TONCENTER_API_V2_URL?.trim() || "https://testnet.toncenter.com/api/v2";
+    }
+    return env.TONCENTER_MAINNET_API_V2_URL?.trim() || env.TONCENTER_API_V2_URL?.trim() || env.VITE_EXPLORER_MAINNET_TONCENTER_API_V2_URL?.trim() || env.VITE_EXPLORER_TONCENTER_API_V2_URL?.trim() || "https://toncenter.com/api/v2";
+  }
   if (network === "testnet") {
     return env.TONCENTER_TESTNET_API_V3_URL?.trim() || env.VITE_EXPLORER_TESTNET_TONCENTER_API_V3_URL?.trim() || "https://testnet.toncenter.com/api/v3";
   }
@@ -154,16 +166,18 @@ function withProxyHeaders(response, cacheStatus, serverTiming) {
 function toncenterTiming(startedAt) {
   return `toncenter;dur=${Math.max(0, performance.now() - startedAt).toFixed(1)}`;
 }
-var init_toncenterV3Proxy = __esm({
-  "../worker/toncenterV3Proxy.ts"() {
+var HISTORICAL_DATA_CACHE_CONTROL;
+var init_toncenterProxy = __esm({
+  "../worker/toncenterProxy.ts"() {
     "use strict";
-    init_functionsRoutes_0_31392941142434183();
-    __name(proxyToncenterV3Json, "proxyToncenterV3Json");
+    init_functionsRoutes_0_5863154692489477();
+    HISTORICAL_DATA_CACHE_CONTROL = "public, max-age=300, s-maxage=604800, immutable";
+    __name(proxyToncenterJson, "proxyToncenterJson");
     __name(parseNetwork, "parseNetwork");
     __name(jsonError, "jsonError");
     __name(createCacheKey, "createCacheKey");
     __name(createUpstreamUrl, "createUpstreamUrl");
-    __name(toncenterApiV3Url, "toncenterApiV3Url");
+    __name(toncenterApiUrl, "toncenterApiUrl");
     __name(toncenterApiKey, "toncenterApiKey");
     __name(toncenterHeaders, "toncenterHeaders");
     __name(defaultEdgeCache, "defaultEdgeCache");
@@ -173,8 +187,53 @@ var init_toncenterV3Proxy = __esm({
   }
 });
 
-// api/toncenter/[network]/v3/blocks.ts
+// api/toncenter/[network]/v2/getShards.ts
 async function onRequest(context) {
+  if (context.request.method !== "GET") {
+    return jsonError(405, "Method not allowed", { allow: "GET" });
+  }
+  const network = parseNetwork(context.params.network);
+  if (!network) {
+    return jsonError(404, "Unknown TON network");
+  }
+  const input = new URL(context.request.url).searchParams;
+  for (const key of input.keys()) {
+    if (key !== "seqno") {
+      return jsonError(400, `Unsupported query parameter: ${key}`);
+    }
+  }
+  const seqnos = input.getAll("seqno");
+  if (seqnos.length !== 1 || !/^\d{1,10}$/.test(seqnos[0] ?? "")) {
+    return jsonError(400, "Exactly one unsigned integer seqno query parameter is required");
+  }
+  const searchParams = new URLSearchParams({ seqno: BigInt(seqnos[0]).toString() });
+  return await proxyToncenterJson(context, {
+    network,
+    version: "v2",
+    endpoint: "getShards",
+    searchParams,
+    cacheControlFor: /* @__PURE__ */ __name((payload) => isNonEmptyShardsResponse(payload) ? HISTORICAL_DATA_CACHE_CONTROL : void 0, "cacheControlFor")
+  });
+}
+function isNonEmptyShardsResponse(value) {
+  if (typeof value !== "object" || value === null || !("result" in value)) {
+    return false;
+  }
+  const result = value.result;
+  return typeof result === "object" && result !== null && "shards" in result && Array.isArray(result.shards) && result.shards.length > 0;
+}
+var init_getShards = __esm({
+  "api/toncenter/[network]/v2/getShards.ts"() {
+    "use strict";
+    init_functionsRoutes_0_5863154692489477();
+    init_toncenterProxy();
+    __name(onRequest, "onRequest");
+    __name(isNonEmptyShardsResponse, "isNonEmptyShardsResponse");
+  }
+});
+
+// api/toncenter/[network]/v3/blocks.ts
+async function onRequest2(context) {
   if (context.request.method !== "GET") {
     return jsonError(405, "Method not allowed", { allow: "GET" });
   }
@@ -186,9 +245,10 @@ async function onRequest(context) {
   if ("error" in prepared) {
     return jsonError(400, prepared.error);
   }
-  const cacheControl = isHistoricalBlockQuery(prepared.searchParams) ? HISTORICAL_BLOCK_CACHE_CONTROL : LATEST_BLOCKS_CACHE_CONTROL;
-  return await proxyToncenterV3Json(context, {
+  const cacheControl = isHistoricalBlockQuery(prepared.searchParams) ? HISTORICAL_DATA_CACHE_CONTROL : LATEST_BLOCKS_CACHE_CONTROL;
+  return await proxyToncenterJson(context, {
     network,
+    version: "v3",
     endpoint: "blocks",
     searchParams: prepared.searchParams,
     cacheControlFor: /* @__PURE__ */ __name((payload) => isNonEmptyBlocksResponse(payload) ? cacheControl : void 0, "cacheControlFor")
@@ -243,13 +303,12 @@ function isHistoricalBlockQuery(searchParams) {
 function isNonEmptyBlocksResponse(value) {
   return typeof value === "object" && value !== null && "blocks" in value && Array.isArray(value.blocks) && value.blocks.length > 0;
 }
-var HISTORICAL_BLOCK_CACHE_CONTROL, LATEST_BLOCKS_CACHE_CONTROL, BLOCK_PARAMETER_NAMES, BLOCK_PARAMETER_SET, SIGNED_INTEGER_PARAMETERS, UNSIGNED_INTEGER_PARAMETERS;
+var LATEST_BLOCKS_CACHE_CONTROL, BLOCK_PARAMETER_NAMES, BLOCK_PARAMETER_SET, SIGNED_INTEGER_PARAMETERS, UNSIGNED_INTEGER_PARAMETERS;
 var init_blocks = __esm({
   "api/toncenter/[network]/v3/blocks.ts"() {
     "use strict";
-    init_functionsRoutes_0_31392941142434183();
-    init_toncenterV3Proxy();
-    HISTORICAL_BLOCK_CACHE_CONTROL = "public, max-age=300, s-maxage=604800, immutable";
+    init_functionsRoutes_0_5863154692489477();
+    init_toncenterProxy();
     LATEST_BLOCKS_CACHE_CONTROL = "public, max-age=0, s-maxage=2, must-revalidate";
     BLOCK_PARAMETER_NAMES = [
       "workchain",
@@ -278,7 +337,7 @@ var init_blocks = __esm({
       "limit",
       "offset"
     ]);
-    __name(onRequest, "onRequest");
+    __name(onRequest2, "onRequest");
     __name(normalizeBlocksSearchParams, "normalizeBlocksSearchParams");
     __name(normalizeBlockParameter, "normalizeBlockParameter");
     __name(isHistoricalBlockQuery, "isHistoricalBlockQuery");
@@ -287,7 +346,7 @@ var init_blocks = __esm({
 });
 
 // api/toncenter/[network]/v3/traces.ts
-async function onRequest2(context) {
+async function onRequest3(context) {
   if (context.request.method !== "GET") {
     return jsonError(405, "Method not allowed", { allow: "GET" });
   }
@@ -309,8 +368,9 @@ async function onRequest2(context) {
   if (includeActions) {
     searchParams.set("include_actions", "true");
   }
-  return await proxyToncenterV3Json(context, {
+  return await proxyToncenterJson(context, {
     network,
+    version: "v3",
     endpoint: "traces",
     searchParams,
     cacheControlFor: /* @__PURE__ */ __name((payload) => isCompleteTraceResponse(payload) ? COMPLETE_TRACE_CACHE_CONTROL : void 0, "cacheControlFor")
@@ -354,14 +414,96 @@ var TRANSACTION_HASH_PATTERN, COMPLETE_TRACE_CACHE_CONTROL;
 var init_traces = __esm({
   "api/toncenter/[network]/v3/traces.ts"() {
     "use strict";
-    init_functionsRoutes_0_31392941142434183();
-    init_toncenterV3Proxy();
+    init_functionsRoutes_0_5863154692489477();
+    init_toncenterProxy();
     TRANSACTION_HASH_PATTERN = /^[0-9a-f]{64}$/i;
     COMPLETE_TRACE_CACHE_CONTROL = "public, max-age=300, s-maxage=604800";
-    __name(onRequest2, "onRequest");
+    __name(onRequest3, "onRequest");
     __name(validateSearchParams, "validateSearchParams");
     __name(isCompleteTraceResponse, "isCompleteTraceResponse");
     __name(isRecord, "isRecord");
+  }
+});
+
+// api/toncenter/[network]/v3/transactions.ts
+async function onRequest4(context) {
+  if (context.request.method !== "GET") {
+    return jsonError(405, "Method not allowed", { allow: "GET" });
+  }
+  const network = parseNetwork(context.params.network);
+  if (!network) {
+    return jsonError(404, "Unknown TON network");
+  }
+  const prepared = normalizeSearchParams(new URL(context.request.url).searchParams);
+  if ("error" in prepared) {
+    return jsonError(400, prepared.error);
+  }
+  return await proxyToncenterJson(context, {
+    network,
+    version: "v3",
+    endpoint: "transactions",
+    searchParams: prepared.searchParams,
+    cacheControlFor: /* @__PURE__ */ __name((payload) => isNonEmptyTransactionsResponse(payload) ? HISTORICAL_DATA_CACHE_CONTROL : void 0, "cacheControlFor")
+  });
+}
+function normalizeSearchParams(input) {
+  for (const key of input.keys()) {
+    if (!TRANSACTION_PARAMETER_SET.has(key)) {
+      return { error: `Unsupported query parameter: ${key}` };
+    }
+  }
+  const searchParams = new URLSearchParams();
+  for (const name of TRANSACTION_PARAMETER_NAMES) {
+    const values = input.getAll(name);
+    if (values.length !== 1 && name !== "limit") {
+      return { error: `Exactly one ${name} query parameter is required` };
+    }
+    if (values.length > 1) {
+      return { error: `Only one ${name} query parameter is allowed` };
+    }
+    const value = values[0];
+    if (value === void 0) {
+      continue;
+    }
+    const normalized = normalizeParameter(name, value);
+    if (!normalized) {
+      return { error: `Invalid ${name} query parameter` };
+    }
+    searchParams.set(name, normalized);
+  }
+  return { searchParams };
+}
+function normalizeParameter(name, value) {
+  if (value.length === 0 || value.length > 128) {
+    return void 0;
+  }
+  if (name === "shard") {
+    return value;
+  }
+  if (name === "workchain") {
+    return /^-?\d+$/.test(value) ? BigInt(value).toString() : void 0;
+  }
+  if (!/^\d+$/.test(value)) {
+    return void 0;
+  }
+  const normalized = BigInt(value);
+  return name !== "limit" || normalized > 0 ? normalized.toString() : void 0;
+}
+function isNonEmptyTransactionsResponse(value) {
+  return typeof value === "object" && value !== null && "transactions" in value && Array.isArray(value.transactions) && value.transactions.length > 0;
+}
+var TRANSACTION_PARAMETER_NAMES, TRANSACTION_PARAMETER_SET;
+var init_transactions = __esm({
+  "api/toncenter/[network]/v3/transactions.ts"() {
+    "use strict";
+    init_functionsRoutes_0_5863154692489477();
+    init_toncenterProxy();
+    TRANSACTION_PARAMETER_NAMES = ["workchain", "shard", "seqno", "limit"];
+    TRANSACTION_PARAMETER_SET = new Set(TRANSACTION_PARAMETER_NAMES);
+    __name(onRequest4, "onRequest");
+    __name(normalizeSearchParams, "normalizeSearchParams");
+    __name(normalizeParameter, "normalizeParameter");
+    __name(isNonEmptyTransactionsResponse, "isNonEmptyTransactionsResponse");
   }
 });
 
@@ -6568,7 +6710,7 @@ async function init(input) {
 var __create2, __defProp2, __getOwnPropDesc2, __getOwnPropNames2, __getProtoOf2, __hasOwnProp2, __commonJS2, __export, __copyProps2, __toESM2, require_tiny_inflate, require_swap, require_unicode_trie, require_b64, require_parse, require_walk, require_stringify, require_unit, require_lib, require_camelize, require_colors, require_css_color_keywords, require_css_to_react_native, require_css_background_parser, require_css_box_shadow, U200D, UFE0Fg, apis, languageFontMap, assetCache, loadDynamicAsset, import_unicode_trie, import_base64_js, $557adaaeb0c7885f$exports, $1627905f8be2ef3f$export$fb4028874a74450, $1627905f8be2ef3f$export$1bb1140fe1358b00, $1627905f8be2ef3f$export$f3e416a182673355, $1627905f8be2ef3f$export$24aa617c849a894a, $1627905f8be2ef3f$export$a73c4d14459b698d, $1627905f8be2ef3f$export$9e5d732f3676a9ba, $1627905f8be2ef3f$export$1dff41d5c0caca01, $1627905f8be2ef3f$export$30a74a373318dec6, $1627905f8be2ef3f$export$d710c5f50fc7496a, $1627905f8be2ef3f$export$66498d28055820a9, $1627905f8be2ef3f$export$eb6c6d0b7c8826f2, $1627905f8be2ef3f$export$de92be486109a1df, $1627905f8be2ef3f$export$606cfc2a8896c91f, $1627905f8be2ef3f$export$e51d3c675bb0140d, $1627905f8be2ef3f$export$da51c6332ad11d7b, $1627905f8be2ef3f$export$bea437c40441867d, $1627905f8be2ef3f$export$c4c7eecbfed13dc9, $1627905f8be2ef3f$export$98e1f8a379849661, $32627af916ac1b00$export$98f50d781a474745, $32627af916ac1b00$export$12ee1f8f5315ca7e, $32627af916ac1b00$export$e4965ce242860454, $32627af916ac1b00$export$8f14048969dcd45e, $32627af916ac1b00$export$133eb141bf58aff4, $32627af916ac1b00$export$5bdb8ccbf5c57afc, $557adaaeb0c7885f$var$data, $557adaaeb0c7885f$var$classTrie, $557adaaeb0c7885f$var$mapClass, $557adaaeb0c7885f$var$mapFirst, $557adaaeb0c7885f$var$Break, $557adaaeb0c7885f$var$LineBreaker, import_css_to_react_native, import_css_background_parser, import_css_box_shadow, import_postcss_value_parser, emoji_regex_default, u8, u16, u32, fleb, fdeb, clim, freb, _a, fl, revfl, _b, fd, rev, x, i, hMap, flt, i, i, i, i, fdt, i, flrm, fdrm, max, bits, bits16, shft, slc, ec, err, inflt, et, td, tds, cffStandardStrings, cffStandardEncoding, cffExpertEncoding, check, glyphset, typeOffsets, langSysTable, parse, glyf, instructionTable, exec, execGlyph, execComponent, roundSuper, xUnitVector, yUnitVector, HPZero, defaultState, arabicWordCheck, arabicSentenceCheck, SUBSTITUTIONS, latinWordCheck, cmap, TOP_DICT_META, PRIVATE_DICT_META, cff, fvar, attachList, caretValue, ligGlyph, ligCaretList, markGlyphSets, gdef, subtableParsers, gpos, subtableParsers$1, lookupRecordDesc, gsub, head, hhea, hmtx, kern, ltag, loca, maxp, os2, post, decode, eightBitMacEncodings, meta, opentype, opentype_module_default, Gu, mr, ju, Hu, Vu, Yu, gr, C, Zr, _o, Xu, vr, c, So, ko, On, ss, as, An, Ar, zl, Ir, ls, fs, cs, ps, hs, ms, Mn, bs, xs, _s, At, De, le, Nr, qn, Un, Mr, jn, Vn, Xn, $r, Jn, ei, ri, Hs, ui, fi, di, hi, Zs, mi, na, ca, pa, ha, ba, ya, _a2, Sa, Ta, Li, Di, La, Da, Na, za, Ka, Ja, nu, iu, p0, ou, lu, cu, pu, mu, ot, gt, vt, Ju, Zu, el, tl, rl, nl, To, Oo, Eo, Po, ol, al, rn, nn, Lo, Do, fl2, we, $o, cl, vl, bl, qo, kl, Tl, xr, wr, _r, cn, Uo, fn, Ol, Yo, gn, Jo, vn, Er, Ml, _n, kt, Pr, os, Ot, $u, O0, E0, gu, j, Ji, P0, me, R0, ro, ir, Vr, C0, D0, dt, W0, U0, Yr, po, Nn, He, Sn, Fn, Un2, Ln, Dn, Tt2, Wn, mt, Pt, wt2, je, Hn, Me, resvg_wasm_exports, wasm, heap, heap_next, WASM_VECTOR_LEN, cachedUint8Memory0, cachedTextEncoder, encodeString, cachedInt32Memory0, cachedTextDecoder, BBox, RenderedImage, Resvg, dist_default, initialized, initWasm, Resvg2, initializedResvg, initializedYoga, _a3, _b2, isDev, ImageResponse;
 var init_api = __esm({
   "../../../node_modules/.bun/@cloudflare+pages-plugin-vercel-og@0.1.2/node_modules/@cloudflare/pages-plugin-vercel-og/dist/src/api/index.js"() {
-    init_functionsRoutes_0_31392941142434183();
+    init_functionsRoutes_0_5863154692489477();
     __create2 = Object.create;
     __defProp2 = Object.defineProperty;
     __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -20740,7 +20882,7 @@ var init_data_abis = __esm({
 var require_react_jsx_runtime_production = __commonJS({
   "../../../node_modules/.bun/react@19.2.4/node_modules/react/cjs/react-jsx-runtime.production.js"(exports2) {
     "use strict";
-    init_functionsRoutes_0_31392941142434183();
+    init_functionsRoutes_0_5863154692489477();
     var REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.transitional.element");
     var REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for("react.fragment");
     function jsxProd(type, config, maybeKey) {
@@ -20772,7 +20914,7 @@ var require_react_jsx_runtime_production = __commonJS({
 var require_jsx_runtime = __commonJS({
   "../../../node_modules/.bun/react@19.2.4/node_modules/react/jsx-runtime.js"(exports2, module) {
     "use strict";
-    init_functionsRoutes_0_31392941142434183();
+    init_functionsRoutes_0_5863154692489477();
     if (true) {
       module.exports = require_react_jsx_runtime_production();
     } else {
@@ -21054,7 +21196,7 @@ var import_jsx_runtime;
 var init_AccountOgImage = __esm({
   "../src/og/AccountOgImage.tsx"() {
     "use strict";
-    init_functionsRoutes_0_31392941142434183();
+    init_functionsRoutes_0_5863154692489477();
     import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
     __name(AccountOgImage, "AccountOgImage");
     __name(Avatar, "Avatar");
@@ -21105,7 +21247,7 @@ var import_jsx_runtime2, PAGE_OG_PREVIEWS;
 var init_PageOgImage = __esm({
   "../src/og/PageOgImage.tsx"() {
     "use strict";
-    init_functionsRoutes_0_31392941142434183();
+    init_functionsRoutes_0_5863154692489477();
     init_AccountOgImage();
     import_jsx_runtime2 = __toESM(require_jsx_runtime(), 1);
     PAGE_OG_PREVIEWS = {
@@ -21214,7 +21356,7 @@ var init_PageOgImage = __esm({
 });
 
 // [[path]].tsx
-async function onRequest3(context) {
+async function onRequest5(context) {
   const url = new URL(context.request.url);
   if (url.pathname === "/og/account.png") {
     return renderAccountOgPng(context);
@@ -21697,7 +21839,7 @@ var import_jsx_runtime3, OG_IMAGE_VERSION, OG_IMAGE_WIDTH, OG_IMAGE_HEIGHT, ABI_
 var init_path = __esm({
   "[[path]].tsx"() {
     "use strict";
-    init_functionsRoutes_0_31392941142434183();
+    init_functionsRoutes_0_5863154692489477();
     init_api();
     init_data_abis();
     init_AccountOgImage();
@@ -21707,7 +21849,7 @@ var init_path = __esm({
     OG_IMAGE_WIDTH = 1200;
     OG_IMAGE_HEIGHT = 630;
     ABI_CATALOG = data_abis_default;
-    __name(onRequest3, "onRequest");
+    __name(onRequest5, "onRequest");
     __name(renderAccountOgPng, "renderAccountOgPng");
     __name(renderAbiOgPng, "renderAbiOgPng");
     __name(renderPageOgPng, "renderPageOgPng");
@@ -21748,45 +21890,61 @@ var init_path = __esm({
   }
 });
 
-// ../.wrangler/tmp/pages-x1xAAC/functionsRoutes-0.31392941142434183.mjs
+// ../.wrangler/tmp/pages-44JCLl/functionsRoutes-0.5863154692489477.mjs
 var routes;
-var init_functionsRoutes_0_31392941142434183 = __esm({
-  "../.wrangler/tmp/pages-x1xAAC/functionsRoutes-0.31392941142434183.mjs"() {
+var init_functionsRoutes_0_5863154692489477 = __esm({
+  "../.wrangler/tmp/pages-44JCLl/functionsRoutes-0.5863154692489477.mjs"() {
     "use strict";
+    init_getShards();
     init_blocks();
     init_traces();
+    init_transactions();
     init_path();
     routes = [
       {
-        routePath: "/api/toncenter/:network/v3/blocks",
-        mountPath: "/api/toncenter/:network/v3",
+        routePath: "/api/toncenter/:network/v2/getShards",
+        mountPath: "/api/toncenter/:network/v2",
         method: "",
         middlewares: [],
         modules: [onRequest]
       },
       {
-        routePath: "/api/toncenter/:network/v3/traces",
+        routePath: "/api/toncenter/:network/v3/blocks",
         mountPath: "/api/toncenter/:network/v3",
         method: "",
         middlewares: [],
         modules: [onRequest2]
       },
       {
+        routePath: "/api/toncenter/:network/v3/traces",
+        mountPath: "/api/toncenter/:network/v3",
+        method: "",
+        middlewares: [],
+        modules: [onRequest3]
+      },
+      {
+        routePath: "/api/toncenter/:network/v3/transactions",
+        mountPath: "/api/toncenter/:network/v3",
+        method: "",
+        middlewares: [],
+        modules: [onRequest4]
+      },
+      {
         routePath: "/:path*",
         mountPath: "/",
         method: "",
         middlewares: [],
-        modules: [onRequest3]
+        modules: [onRequest5]
       }
     ];
   }
 });
 
 // ../../../node_modules/.bun/wrangler@4.100.0+acbd2503149e7860/node_modules/wrangler/templates/pages-template-worker.ts
-init_functionsRoutes_0_31392941142434183();
+init_functionsRoutes_0_5863154692489477();
 
 // ../../../node_modules/.bun/path-to-regexp@6.3.0/node_modules/path-to-regexp/dist.es2015/index.js
-init_functionsRoutes_0_31392941142434183();
+init_functionsRoutes_0_5863154692489477();
 function lexer(str) {
   var tokens = [];
   var i2 = 0;
