@@ -28,13 +28,30 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
+// ../worker/edgeCache.ts
+function defaultEdgeCache() {
+  const cacheStorage = globalThis.caches;
+  return cacheStorage?.default;
+}
+function matchEdgeCache(edgeCache, cacheKey) {
+  return edgeCache ? edgeCache.match(cacheKey).catch(() => void 0) : void 0;
+}
+var init_edgeCache = __esm({
+  "../worker/edgeCache.ts"() {
+    "use strict";
+    init_functionsRoutes_0_5207937887986309();
+    __name(defaultEdgeCache, "defaultEdgeCache");
+    __name(matchEdgeCache, "matchEdgeCache");
+  }
+});
+
 // ../worker/toncenterProxy.ts
 async function proxyToncenterJson(context, options) {
   const { network, searchParams, cacheControlFor } = options;
   const requestUrl = new URL(context.request.url);
   const cacheKey = createCacheKey(requestUrl, searchParams);
   const edgeCache = defaultEdgeCache();
-  const cached = await matchCache(edgeCache, cacheKey);
+  const cached = await matchEdgeCache(edgeCache, cacheKey);
   if (cached) {
     return withProxyHeaders(cached, "HIT", 'edge;desc="HIT"');
   }
@@ -185,13 +202,6 @@ function toncenterHeaders(env, network) {
   }
   return headers;
 }
-function defaultEdgeCache() {
-  const cacheStorage = globalThis.caches;
-  return cacheStorage?.default;
-}
-function matchCache(edgeCache, cacheKey) {
-  return edgeCache ? edgeCache.match(cacheKey).catch(() => void 0) : void 0;
-}
 function withProxyHeaders(response, cacheStatus, serverTiming) {
   const headers = new Headers(response.headers);
   headers.set("server-timing", serverTiming);
@@ -209,7 +219,8 @@ var HISTORICAL_DATA_CACHE_CONTROL, INT32_MIN, INT32_MAX, INT64_MAX;
 var init_toncenterProxy = __esm({
   "../worker/toncenterProxy.ts"() {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
+    init_edgeCache();
     HISTORICAL_DATA_CACHE_CONTROL = "public, max-age=300, s-maxage=604800, immutable";
     INT32_MIN = -2147483648n;
     INT32_MAX = 2147483647n;
@@ -225,8 +236,6 @@ var init_toncenterProxy = __esm({
     __name(toncenterApiKey, "toncenterApiKey");
     __name(firstValue, "firstValue");
     __name(toncenterHeaders, "toncenterHeaders");
-    __name(defaultEdgeCache, "defaultEdgeCache");
-    __name(matchCache, "matchCache");
     __name(withProxyHeaders, "withProxyHeaders");
     __name(toncenterTiming, "toncenterTiming");
   }
@@ -265,7 +274,7 @@ function isNonEmptyShardsResponse(value) {
 var init_getShards = __esm({
   "api/toncenter/[network]/v2/getShards.ts"() {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     init_toncenterProxy();
     __name(onRequest, "onRequest");
     __name(isNonEmptyShardsResponse, "isNonEmptyShardsResponse");
@@ -356,7 +365,7 @@ var LATEST_BLOCKS_CACHE_CONTROL, BLOCK_PARAMETER_NAMES, BLOCK_PARAMETER_SET;
 var init_blocks = __esm({
   "api/toncenter/[network]/v3/blocks.ts"() {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     init_toncenterProxy();
     LATEST_BLOCKS_CACHE_CONTROL = "public, max-age=0, s-maxage=2, must-revalidate";
     BLOCK_PARAMETER_NAMES = [
@@ -446,7 +455,7 @@ var TRANSACTION_HASH_PATTERN, COMPLETE_TRACE_CACHE_CONTROL;
 var init_traces = __esm({
   "api/toncenter/[network]/v3/traces.ts"() {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     init_toncenterProxy();
     TRANSACTION_HASH_PATTERN = /^[0-9a-f]{64}$/i;
     COMPLETE_TRACE_CACHE_CONTROL = "public, max-age=300, s-maxage=604800";
@@ -524,7 +533,7 @@ var TRANSACTION_PARAMETER_NAMES, TRANSACTION_PARAMETER_SET, REQUIRED_TRANSACTION
 var init_transactions = __esm({
   "api/toncenter/[network]/v3/transactions.ts"() {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     init_toncenterProxy();
     TRANSACTION_PARAMETER_NAMES = ["workchain", "shard", "seqno", "limit", "offset"];
     TRANSACTION_PARAMETER_SET = new Set(TRANSACTION_PARAMETER_NAMES);
@@ -590,7 +599,7 @@ function isRecord2(value) {
 var init_emulateNavigationPayload = __esm({
   "../../explorer-core/src/pages/emulateNavigationPayload.ts"() {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     __name(readEmulateNavigationPayload, "readEmulateNavigationPayload");
     __name(isContractAbi, "isContractAbi");
     __name(isJson, "isJson");
@@ -688,7 +697,7 @@ var SHARED_EMULATION_VERSION, MAX_SHARED_ACCOUNT_OVERRIDES, MAX_UINT32;
 var init_emulateSharing = __esm({
   "../../explorer-core/src/pages/emulateSharing.ts"() {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     init_emulateNavigationPayload();
     SHARED_EMULATION_VERSION = 1;
     MAX_SHARED_ACCOUNT_OVERRIDES = 64;
@@ -826,7 +835,7 @@ var EMULATION_SHARE_TTL_MS, MAX_REQUEST_BYTES, SHARE_ID_PATTERN, OBJECT_PREFIX;
 var init_emulationShares = __esm({
   "../worker/emulationShares.ts"() {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     init_emulateSharing();
     EMULATION_SHARE_TTL_MS = 30 * 24 * 60 * 60 * 1e3;
     MAX_REQUEST_BYTES = 1024 * 1024;
@@ -850,7 +859,7 @@ function onRequest5(context) {
 var init_id = __esm({
   "api/emulations/[id].ts"() {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     init_emulationShares();
     __name(onRequest5, "onRequest");
   }
@@ -863,9 +872,444 @@ function onRequest6(context) {
 var init_emulations = __esm({
   "api/emulations/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     init_emulationShares();
     __name(onRequest6, "onRequest");
+  }
+});
+
+// ../../explorer-core/src/nftSafety.ts
+function getNftSafetyCandidateValues({
+  imageUrl,
+  contentHash,
+  collectionName
+}) {
+  const imageUrls = imageUrl ? unique([imageUrl, imageUrlFromToncenterProxyUrl(imageUrl)]).map(normalizeImageUrl) : [];
+  const imageHostSuffixes = unique(
+    imageUrls.flatMap((value) => {
+      try {
+        const hostnameParts = new URL(value).hostname.toLowerCase().split(".");
+        return hostnameParts.map((_, index) => hostnameParts.slice(index).join("."));
+      } catch {
+        return [];
+      }
+    })
+  );
+  return {
+    imageUrls,
+    imageHostSuffixes,
+    contentHashes: unique([
+      contentHash ? normalizeContentHash(contentHash) : void 0,
+      imageUrl ? contentHashFromToncenterProxyUrl(imageUrl) : void 0
+    ]),
+    collectionNames: collectionName ? [normalizeCollectionName(collectionName)] : []
+  };
+}
+async function matchesNftSafetyRegistry(candidate, registry, hashValue) {
+  const values = getNftSafetyCandidateValues(candidate);
+  if (values.contentHashes.some((value) => registry.contentHashes.includes(value))) {
+    return true;
+  }
+  const [imageUrls, imageHostSuffixes, collectionNames] = await Promise.all([
+    Promise.all(values.imageUrls.map(hashValue)),
+    Promise.all(values.imageHostSuffixes.map(hashValue)),
+    Promise.all(values.collectionNames.map(hashValue))
+  ]);
+  return imageUrls.some((value) => registry.imageUrlHashes.includes(value)) || imageHostSuffixes.some((value) => registry.imageHostSuffixHashes.includes(value)) || collectionNames.some((value) => registry.collectionNameHashes.includes(value));
+}
+function getNftSafetyRegistryVersion(registry) {
+  const values = [
+    ...registry.imageUrlHashes,
+    ...registry.imageHostSuffixHashes,
+    ...registry.contentHashes,
+    ...registry.collectionNameHashes
+  ].join("|");
+  let hash = 2166136261;
+  for (let index = 0; index < values.length; index += 1) {
+    hash = Math.imul(hash ^ values.charCodeAt(index), 16777619);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
+}
+var NSFW_NFT_REGISTRY, normalizeImageUrl, normalizeContentHash, normalizeCollectionName, sourceFromToncenterProxyUrl, contentHashFromToncenterProxyUrl, imageUrlFromToncenterProxyUrl, unique, NSFW_NFT_REGISTRY_VERSION;
+var init_nftSafety = __esm({
+  "../../explorer-core/src/nftSafety.ts"() {
+    "use strict";
+    init_functionsRoutes_0_5207937887986309();
+    NSFW_NFT_REGISTRY = {
+      imageUrlHashes: ["53f666edac772f162656b483f07c8e6811b0ce6a42f20e243ba513280f622e29"],
+      imageHostSuffixHashes: ["dd1b7a6727862b9faa5e38655ab1d8c11f943b518b73a70da1367912dbe8a5e3"],
+      contentHashes: [
+        "ead9e3c5f260785e8852c0dca7ad1fd7e6690b03009a158a849243e59685aa7d",
+        "1c7120b6ca981bd77fff11376b0cfaf5ceefdcd8206c4ea030446f2c7e0a4f23",
+        "ced2746e922cd0a2a1852a82c2d84ec1c3f9fc683fd2f6de9cf28bed7dfbabf4",
+        "b782c09a750da9598ef84db6cb76f0f142071e9674625ca70a534d6addae794b",
+        "534b1ac5d274999ae861c6b515166f57d002f2c86c3fd619a25581abda15b88a",
+        "9697402e217a999d065c81db61e159a8f7e9d5dc108433e64eb74c3726397581",
+        "a1d6fab43259491b282fa553216c1416dc03ddb23adb3fdb9293f8b0e1238a55",
+        "c227582c2110266d04ba33ca6d5a117221d058fb055f25c6176acfff69994902"
+      ],
+      collectionNameHashes: [
+        "2140db963b117a2e103815200b18769a7f265f18f113228709230741f5880a41",
+        "278b57f87e6a286c4aff92d7098a13eb102d709d46abc33214b632482ffbddab",
+        "8b861ee6eb6c056279bce13318957248c1ecc7ecebff9e63bb7e367ef65d7eaf",
+        "8088a3d22d88109a95a3f905075a9632586b9a3b5518eb096ef01a6936f9190d",
+        "3ea3e6af075ccf60eb6f217859ff70ddf1903ea3c7ed24c57f7b64ecedee6f4f",
+        "d4bb2725a28f0e9093eaa8b1f181084ac5c2e03af98c694a04cc1a9cd99d8880"
+      ]
+    };
+    normalizeImageUrl = /* @__PURE__ */ __name((value) => {
+      try {
+        const url = new URL(value);
+        url.search = "";
+        url.hash = "";
+        url.pathname = url.pathname.replace(/\/+$/, "") || "/";
+        return url.toString();
+      } catch {
+        return value.trim();
+      }
+    }, "normalizeImageUrl");
+    normalizeContentHash = /* @__PURE__ */ __name((value) => value.trim().toLowerCase().replace(/^sha256:/, ""), "normalizeContentHash");
+    normalizeCollectionName = /* @__PURE__ */ __name((value) => value.trim().toLowerCase().replace(/\s+/g, " "), "normalizeCollectionName");
+    sourceFromToncenterProxyUrl = /* @__PURE__ */ __name((value) => {
+      try {
+        const url = new URL(value);
+        if (url.hostname !== "toncenter.com" && !url.hostname.endsWith(".toncenter.com")) {
+          return void 0;
+        }
+        const encodedSource = url.pathname.split("/").at(-1);
+        if (!encodedSource) {
+          return void 0;
+        }
+        const base64 = encodedSource.replace(/-/g, "+").replace(/_/g, "/");
+        return atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, "="));
+      } catch {
+        return void 0;
+      }
+    }, "sourceFromToncenterProxyUrl");
+    contentHashFromToncenterProxyUrl = /* @__PURE__ */ __name((value) => {
+      const source = sourceFromToncenterProxyUrl(value);
+      return source !== void 0 && /^local:\/\/\/sha256\/[0-9a-f]{64}$/i.test(source) ? source.slice("local:///sha256/".length).toLowerCase() : void 0;
+    }, "contentHashFromToncenterProxyUrl");
+    imageUrlFromToncenterProxyUrl = /* @__PURE__ */ __name((value) => {
+      const source = sourceFromToncenterProxyUrl(value);
+      return source !== void 0 && /^https?:\/\//i.test(source) ? source : void 0;
+    }, "imageUrlFromToncenterProxyUrl");
+    unique = /* @__PURE__ */ __name((values) => [
+      ...new Set(values.filter((value) => value !== void 0 && value.length > 0))
+    ], "unique");
+    __name(getNftSafetyCandidateValues, "getNftSafetyCandidateValues");
+    __name(matchesNftSafetyRegistry, "matchesNftSafetyRegistry");
+    __name(getNftSafetyRegistryVersion, "getNftSafetyRegistryVersion");
+    NSFW_NFT_REGISTRY_VERSION = getNftSafetyRegistryVersion(NSFW_NFT_REGISTRY);
+  }
+});
+
+// ../worker/remoteImage.ts
+function parseRemoteImageUrl(value, base) {
+  let url;
+  try {
+    url = base ? new URL(value, base) : new URL(value);
+  } catch {
+    return void 0;
+  }
+  return url.protocol === "https:" && !url.username && !url.password && !isPrivateHost(url.hostname) ? url : void 0;
+}
+async function fetchRemoteImage(initialUrl) {
+  let url = initialUrl;
+  for (let redirects = 0; redirects <= 3; redirects += 1) {
+    let response;
+    try {
+      response = await fetch(url, {
+        headers: { accept: "image/*" },
+        redirect: "manual",
+        signal: AbortSignal.timeout(15e3)
+      });
+    } catch {
+      return failure(502, "Image source request failed");
+    }
+    if (REDIRECTS.has(response.status)) {
+      const location = response.headers.get("location");
+      const target = location && redirects < 3 ? parseRemoteImageUrl(location, url) : void 0;
+      if (!target) {
+        return failure(502, "Image source redirected to a disallowed URL");
+      }
+      url = target;
+      continue;
+    }
+    if (!response.ok) {
+      return failure(502, `Image source returned HTTP ${response.status}`);
+    }
+    const declaredLength = Number(response.headers.get("content-length"));
+    if (Number.isFinite(declaredLength) && declaredLength > REMOTE_IMAGE_MAX_BYTES) {
+      return failure(413, "Image exceeds the 10 MiB limit");
+    }
+    const bytes = await readBody(response);
+    if (!bytes) {
+      return failure(413, "Image exceeds the 10 MiB limit");
+    }
+    const contentType = imageContentType(response.headers.get("content-type"), bytes);
+    return contentType ? { image: { bytes, contentType } } : failure(415, "Image source did not return a supported image");
+  }
+  return failure(502, "Image source returned too many redirects");
+}
+function failure(status, message) {
+  return { error: { status, message } };
+}
+async function readBody(response) {
+  if (!response.body) {
+    return new Uint8Array();
+  }
+  const reader = response.body.getReader();
+  const chunks = [];
+  let length = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    length += value.byteLength;
+    if (length > REMOTE_IMAGE_MAX_BYTES) {
+      await reader.cancel();
+      return void 0;
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(length);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return bytes;
+}
+function imageContentType(header, bytes) {
+  const declared = header?.split(";", 1)[0]?.trim().toLowerCase();
+  if (declared?.startsWith("image/")) return declared;
+  if (prefix(bytes, [137, 80, 78, 71])) return "image/png";
+  if (prefix(bytes, [255, 216, 255])) return "image/jpeg";
+  const signature = new TextDecoder().decode(bytes.slice(0, 12));
+  if (/^GIF8[79]a/.test(signature)) return "image/gif";
+  return signature.startsWith("RIFF") && signature.slice(8, 12) === "WEBP" ? "image/webp" : void 0;
+}
+function prefix(bytes, expected) {
+  return expected.every((byte, index) => bytes[index] === byte);
+}
+function isPrivateHost(value) {
+  const host = value.toLowerCase().replace(/\.$/, "").replace(/^\[|\]$/g, "");
+  if (!host || host === "localhost" || /\.(?:localhost|local|internal|lan|home)$/.test(host)) {
+    return true;
+  }
+  const ip = host.split(".").map(Number);
+  if (ip.length === 4 && ip.every((part) => Number.isInteger(part) && part >= 0 && part <= 255)) {
+    const [a, b] = ip;
+    return a === 0 || a === 10 || a === 127 || a === 100 && b >= 64 && b <= 127 || a === 169 && b === 254 || a === 172 && b >= 16 && b <= 31 || a === 192 && (b === 0 || b === 168) || a === 198 && (b === 18 || b === 19) || a >= 224;
+  }
+  return host.includes(":") && (host === "::" || host === "::1" || /^(?:fc|fd|fe[89ab]|::ffff:)/.test(host));
+}
+var REMOTE_IMAGE_MAX_BYTES, REDIRECTS;
+var init_remoteImage = __esm({
+  "../worker/remoteImage.ts"() {
+    "use strict";
+    init_functionsRoutes_0_5207937887986309();
+    REMOTE_IMAGE_MAX_BYTES = 10 * 1024 * 1024;
+    REDIRECTS = /* @__PURE__ */ new Set([301, 302, 303, 307, 308]);
+    __name(parseRemoteImageUrl, "parseRemoteImageUrl");
+    __name(fetchRemoteImage, "fetchRemoteImage");
+    __name(failure, "failure");
+    __name(readBody, "readBody");
+    __name(imageContentType, "imageContentType");
+    __name(prefix, "prefix");
+    __name(isPrivateHost, "isPrivateHost");
+  }
+});
+
+// ../worker/nftMedia.ts
+async function createNftMediaResponse(context, registry = NSFW_NFT_REGISTRY) {
+  if (context.request.method !== "GET") {
+    return mediaError(405, "Method not allowed", { allow: "GET" });
+  }
+  if (context.request.headers.get("sec-fetch-site") === "cross-site") {
+    return mediaError(403, "Cross-site image proxying is not allowed");
+  }
+  const requestUrl = new URL(context.request.url);
+  const validationError = validateSearchParams2(requestUrl.searchParams);
+  if (validationError) {
+    return mediaError(400, validationError);
+  }
+  const source = requestUrl.searchParams.get("src") ?? "";
+  const collectionName = requestUrl.searchParams.get("collection") || void 0;
+  const sourceUrl = parseRemoteImageUrl(source);
+  if (!sourceUrl) {
+    return mediaError(400, "src must be a public HTTPS image URL");
+  }
+  const cacheKey = createCacheKey2(requestUrl, source, collectionName);
+  const edgeCache = defaultEdgeCache();
+  const cached = await matchEdgeCache(edgeCache, cacheKey);
+  if (cached) {
+    return withMediaHeaders(cached, "HIT");
+  }
+  const startedAt = performance.now();
+  if (await matchesNftSafetyRegistry({ imageUrl: source, collectionName }, registry, sha256Text)) {
+    return cacheMediaResponse(context, edgeCache, cacheKey, blockedResponse(), startedAt);
+  }
+  const remote = await fetchRemoteImage(sourceUrl);
+  if (remote.error) {
+    return withMediaHeaders(
+      mediaError(remote.error.status, remote.error.message),
+      edgeCache ? "MISS" : "BYPASS",
+      startedAt
+    );
+  }
+  const contentHash = await sha256Hex(remote.image.bytes);
+  if (await matchesNftSafetyRegistry(
+    {
+      imageUrl: source,
+      contentHash,
+      collectionName
+    },
+    registry,
+    sha256Text
+  )) {
+    return cacheMediaResponse(context, edgeCache, cacheKey, blockedResponse(), startedAt);
+  }
+  const response = new Response(remote.image.bytes.buffer, {
+    headers: {
+      "cache-control": NFT_MEDIA_CACHE_CONTROL,
+      "content-length": String(remote.image.bytes.byteLength),
+      "content-security-policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+      "content-type": remote.image.contentType,
+      etag: `"sha256-${contentHash}"`,
+      [NFT_MEDIA_SAFETY_HEADER]: "allowed",
+      "x-content-type-options": "nosniff"
+    }
+  });
+  return cacheMediaResponse(context, edgeCache, cacheKey, response, startedAt);
+}
+async function cacheMediaResponse(context, edgeCache, cacheKey, response, startedAt) {
+  const result = withMediaHeaders(response, edgeCache ? "MISS" : "BYPASS", startedAt);
+  if (edgeCache) {
+    const write = edgeCache.put(cacheKey, result.clone()).catch(() => void 0);
+    if (context.waitUntil) {
+      context.waitUntil(write);
+    } else {
+      await write;
+    }
+  }
+  return result;
+}
+function blockedResponse() {
+  return new Response(null, {
+    status: 451,
+    headers: {
+      "cache-control": NFT_MEDIA_CACHE_CONTROL,
+      [NFT_MEDIA_SAFETY_HEADER]: "blocked",
+      "x-content-type-options": "nosniff"
+    }
+  });
+}
+function validateSearchParams2(searchParams) {
+  for (const key of searchParams.keys()) {
+    if (key !== "src" && key !== "collection" && key !== "v") {
+      return `Unsupported query parameter: ${key}`;
+    }
+  }
+  if (searchParams.getAll("src").length !== 1) {
+    return "Exactly one src query parameter is required";
+  }
+  if (searchParams.getAll("v").length !== 1) {
+    return "Exactly one v query parameter is required";
+  }
+  if (searchParams.get("v") !== NSFW_NFT_REGISTRY_VERSION) {
+    return "Unsupported NFT safety registry version";
+  }
+  const source = searchParams.get("src") ?? "";
+  if (source.length === 0 || source.length > MAX_SOURCE_LENGTH) {
+    return `src must be between 1 and ${MAX_SOURCE_LENGTH} characters`;
+  }
+  const collectionNames = searchParams.getAll("collection");
+  if (collectionNames.length > 1) {
+    return "collection may be provided once";
+  }
+  if ((collectionNames[0]?.length ?? 0) > MAX_COLLECTION_NAME_LENGTH) {
+    return `collection must not exceed ${MAX_COLLECTION_NAME_LENGTH} characters`;
+  }
+  return void 0;
+}
+function createCacheKey2(requestUrl, source, collectionName) {
+  const cacheUrl = new URL(requestUrl.origin + requestUrl.pathname);
+  cacheUrl.searchParams.set("src", source);
+  if (collectionName) {
+    cacheUrl.searchParams.set("collection", collectionName);
+  }
+  cacheUrl.searchParams.set("v", NSFW_NFT_REGISTRY_VERSION);
+  return new Request(cacheUrl);
+}
+async function sha256Text(value) {
+  return await sha256Hex(new TextEncoder().encode(value));
+}
+async function sha256Hex(value) {
+  const digest = await crypto.subtle.digest("SHA-256", value.buffer);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+function mediaError(status, error, headers) {
+  return Response.json(
+    { error },
+    {
+      status,
+      headers: {
+        "cache-control": "no-store",
+        [NFT_MEDIA_SAFETY_HEADER]: "unavailable",
+        "x-content-type-options": "nosniff",
+        ...Object.fromEntries(new Headers(headers))
+      }
+    }
+  );
+}
+function withMediaHeaders(response, cacheStatus, startedAt) {
+  const headers = new Headers(response.headers);
+  headers.set("x-actonscan-cache", cacheStatus);
+  headers.set(
+    "server-timing",
+    startedAt === void 0 ? 'nft-media-cache;desc="HIT"' : `nft-media;dur=${Math.max(0, performance.now() - startedAt).toFixed(1)}`
+  );
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  });
+}
+var NFT_MEDIA_CACHE_CONTROL, NFT_MEDIA_SAFETY_HEADER, MAX_SOURCE_LENGTH, MAX_COLLECTION_NAME_LENGTH;
+var init_nftMedia = __esm({
+  "../worker/nftMedia.ts"() {
+    "use strict";
+    init_functionsRoutes_0_5207937887986309();
+    init_nftSafety();
+    init_edgeCache();
+    init_remoteImage();
+    NFT_MEDIA_CACHE_CONTROL = "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400";
+    NFT_MEDIA_SAFETY_HEADER = "x-actonscan-nft-safety";
+    MAX_SOURCE_LENGTH = 8 * 1024;
+    MAX_COLLECTION_NAME_LENGTH = 256;
+    __name(createNftMediaResponse, "createNftMediaResponse");
+    __name(cacheMediaResponse, "cacheMediaResponse");
+    __name(blockedResponse, "blockedResponse");
+    __name(validateSearchParams2, "validateSearchParams");
+    __name(createCacheKey2, "createCacheKey");
+    __name(sha256Text, "sha256Text");
+    __name(sha256Hex, "sha256Hex");
+    __name(mediaError, "mediaError");
+    __name(withMediaHeaders, "withMediaHeaders");
+  }
+});
+
+// media/nft.ts
+function onRequest7(context) {
+  return createNftMediaResponse(context);
+}
+var init_nft = __esm({
+  "media/nft.ts"() {
+    "use strict";
+    init_functionsRoutes_0_5207937887986309();
+    init_nftMedia();
+    __name(onRequest7, "onRequest");
   }
 });
 
@@ -7072,7 +7516,7 @@ async function init(input) {
 var __create2, __defProp2, __getOwnPropDesc2, __getOwnPropNames2, __getProtoOf2, __hasOwnProp2, __commonJS2, __export, __copyProps2, __toESM2, require_tiny_inflate, require_swap, require_unicode_trie, require_b64, require_parse, require_walk, require_stringify, require_unit, require_lib, require_camelize, require_colors, require_css_color_keywords, require_css_to_react_native, require_css_background_parser, require_css_box_shadow, U200D, UFE0Fg, apis, languageFontMap, assetCache, loadDynamicAsset, import_unicode_trie, import_base64_js, $557adaaeb0c7885f$exports, $1627905f8be2ef3f$export$fb4028874a74450, $1627905f8be2ef3f$export$1bb1140fe1358b00, $1627905f8be2ef3f$export$f3e416a182673355, $1627905f8be2ef3f$export$24aa617c849a894a, $1627905f8be2ef3f$export$a73c4d14459b698d, $1627905f8be2ef3f$export$9e5d732f3676a9ba, $1627905f8be2ef3f$export$1dff41d5c0caca01, $1627905f8be2ef3f$export$30a74a373318dec6, $1627905f8be2ef3f$export$d710c5f50fc7496a, $1627905f8be2ef3f$export$66498d28055820a9, $1627905f8be2ef3f$export$eb6c6d0b7c8826f2, $1627905f8be2ef3f$export$de92be486109a1df, $1627905f8be2ef3f$export$606cfc2a8896c91f, $1627905f8be2ef3f$export$e51d3c675bb0140d, $1627905f8be2ef3f$export$da51c6332ad11d7b, $1627905f8be2ef3f$export$bea437c40441867d, $1627905f8be2ef3f$export$c4c7eecbfed13dc9, $1627905f8be2ef3f$export$98e1f8a379849661, $32627af916ac1b00$export$98f50d781a474745, $32627af916ac1b00$export$12ee1f8f5315ca7e, $32627af916ac1b00$export$e4965ce242860454, $32627af916ac1b00$export$8f14048969dcd45e, $32627af916ac1b00$export$133eb141bf58aff4, $32627af916ac1b00$export$5bdb8ccbf5c57afc, $557adaaeb0c7885f$var$data, $557adaaeb0c7885f$var$classTrie, $557adaaeb0c7885f$var$mapClass, $557adaaeb0c7885f$var$mapFirst, $557adaaeb0c7885f$var$Break, $557adaaeb0c7885f$var$LineBreaker, import_css_to_react_native, import_css_background_parser, import_css_box_shadow, import_postcss_value_parser, emoji_regex_default, u8, u16, u32, fleb, fdeb, clim, freb, _a, fl, revfl, _b, fd, rev, x, i, hMap, flt, i, i, i, i, fdt, i, flrm, fdrm, max, bits, bits16, shft, slc, ec, err, inflt, et, td, tds, cffStandardStrings, cffStandardEncoding, cffExpertEncoding, check, glyphset, typeOffsets, langSysTable, parse, glyf, instructionTable, exec, execGlyph, execComponent, roundSuper, xUnitVector, yUnitVector, HPZero, defaultState, arabicWordCheck, arabicSentenceCheck, SUBSTITUTIONS, latinWordCheck, cmap, TOP_DICT_META, PRIVATE_DICT_META, cff, fvar, attachList, caretValue, ligGlyph, ligCaretList, markGlyphSets, gdef, subtableParsers, gpos, subtableParsers$1, lookupRecordDesc, gsub, head, hhea, hmtx, kern, ltag, loca, maxp, os2, post, decode, eightBitMacEncodings, meta, opentype, opentype_module_default, Gu, mr, ju, Hu, Vu, Yu, gr, C, Zr, _o, Xu, vr, c, So, ko, On, ss, as, An, Ar, zl, Ir, ls, fs, cs, ps, hs, ms, Mn, bs, xs, _s, At, De, le, Nr, qn, Un, Mr, jn, Vn, Xn, $r, Jn, ei, ri, Hs, ui, fi, di, hi, Zs, mi, na, ca, pa, ha, ba, ya, _a2, Sa, Ta, Li, Di, La, Da, Na, za, Ka, Ja, nu, iu, p0, ou, lu, cu, pu, mu, ot, gt, vt, Ju, Zu, el, tl, rl, nl, To, Oo, Eo, Po, ol, al, rn, nn, Lo, Do, fl2, we, $o, cl, vl, bl, qo, kl, Tl, xr, wr, _r, cn, Uo, fn, Ol, Yo, gn, Jo, vn, Er, Ml, _n, kt, Pr, os, Ot, $u, O0, E0, gu, j, Ji, P0, me, R0, ro, ir, Vr, C0, D0, dt, W0, U0, Yr, po, Nn, He, Sn, Fn, Un2, Ln, Dn, Tt2, Wn, mt, Pt, wt2, je, Hn, Me, resvg_wasm_exports, wasm, heap, heap_next, WASM_VECTOR_LEN, cachedUint8Memory0, cachedTextEncoder, encodeString, cachedInt32Memory0, cachedTextDecoder, BBox, RenderedImage, Resvg, dist_default, initialized, initWasm, Resvg2, initializedResvg, initializedYoga, _a3, _b2, isDev, ImageResponse;
 var init_api = __esm({
   "../../../node_modules/.bun/@cloudflare+pages-plugin-vercel-og@0.1.2/node_modules/@cloudflare/pages-plugin-vercel-og/dist/src/api/index.js"() {
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     __create2 = Object.create;
     __defProp2 = Object.defineProperty;
     __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -8358,7 +8802,7 @@ var init_api = __esm({
           };
         }, "border2");
         var directionFactory = /* @__PURE__ */ __name(function directionFactory2(_ref) {
-          var _ref$types = _ref.types, types = _ref$types === void 0 ? [LENGTH, UNSUPPORTED_LENGTH_UNIT, PERCENT] : _ref$types, _ref$directions = _ref.directions, directions = _ref$directions === void 0 ? ["Top", "Right", "Bottom", "Left"] : _ref$directions, _ref$prefix = _ref.prefix, prefix = _ref$prefix === void 0 ? "" : _ref$prefix, _ref$suffix = _ref.suffix, suffix = _ref$suffix === void 0 ? "" : _ref$suffix;
+          var _ref$types = _ref.types, types = _ref$types === void 0 ? [LENGTH, UNSUPPORTED_LENGTH_UNIT, PERCENT] : _ref$types, _ref$directions = _ref.directions, directions = _ref$directions === void 0 ? ["Top", "Right", "Bottom", "Left"] : _ref$directions, _ref$prefix = _ref.prefix, prefix2 = _ref$prefix === void 0 ? "" : _ref$prefix, _ref$suffix = _ref.suffix, suffix = _ref$suffix === void 0 ? "" : _ref$suffix;
           return function(tokenStream) {
             var _ref2;
             var values = [];
@@ -8370,7 +8814,7 @@ var init_api = __esm({
             tokenStream.expectEmpty();
             var top = values[0], _values$ = values[1], right = _values$ === void 0 ? top : _values$, _values$2 = values[2], bottom = _values$2 === void 0 ? top : _values$2, _values$3 = values[3], left = _values$3 === void 0 ? right : _values$3;
             var keyFor = /* @__PURE__ */ __name(function keyFor2(n) {
-              return "" + prefix + directions[n] + suffix;
+              return "" + prefix2 + directions[n] + suffix;
             }, "keyFor2");
             return _ref2 = {}, _ref2[keyFor(0)] = top, _ref2[keyFor(1)] = right, _ref2[keyFor(2)] = bottom, _ref2[keyFor(3)] = left, _ref2;
           };
@@ -21244,7 +21688,7 @@ var init_data_abis = __esm({
 var require_react_jsx_runtime_production = __commonJS({
   "../../../node_modules/.bun/react@19.2.8/node_modules/react/cjs/react-jsx-runtime.production.js"(exports2) {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     var REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.transitional.element");
     var REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for("react.fragment");
     function jsxProd(type, config, maybeKey) {
@@ -21276,7 +21720,7 @@ var require_react_jsx_runtime_production = __commonJS({
 var require_jsx_runtime = __commonJS({
   "../../../node_modules/.bun/react@19.2.8/node_modules/react/jsx-runtime.js"(exports2, module) {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     if (true) {
       module.exports = require_react_jsx_runtime_production();
     } else {
@@ -21558,7 +22002,7 @@ var import_jsx_runtime;
 var init_AccountOgImage = __esm({
   "../src/og/AccountOgImage.tsx"() {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
     __name(AccountOgImage, "AccountOgImage");
     __name(Avatar, "Avatar");
@@ -21610,7 +22054,7 @@ var import_jsx_runtime2, PAGE_OG_PREVIEWS;
 var init_PageOgImage = __esm({
   "../src/og/PageOgImage.tsx"() {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     init_AccountOgImage();
     import_jsx_runtime2 = __toESM(require_jsx_runtime(), 1);
     PAGE_OG_PREVIEWS = {
@@ -21727,7 +22171,7 @@ var init_PageOgImage = __esm({
 });
 
 // [[path]].tsx
-async function onRequest7(context) {
+async function onRequest8(context) {
   const url = new URL(context.request.url);
   if (url.pathname === "/og/account.png") {
     return renderAccountOgPng(context);
@@ -22210,7 +22654,7 @@ var import_jsx_runtime3, OG_IMAGE_VERSION, OG_IMAGE_WIDTH, OG_IMAGE_HEIGHT, ABI_
 var init_path = __esm({
   "[[path]].tsx"() {
     "use strict";
-    init_functionsRoutes_0_7922177066128344();
+    init_functionsRoutes_0_5207937887986309();
     init_api();
     init_data_abis();
     init_AccountOgImage();
@@ -22220,7 +22664,7 @@ var init_path = __esm({
     OG_IMAGE_WIDTH = 1200;
     OG_IMAGE_HEIGHT = 630;
     ABI_CATALOG = data_abis_default;
-    __name(onRequest7, "onRequest");
+    __name(onRequest8, "onRequest");
     __name(renderAccountOgPng, "renderAccountOgPng");
     __name(renderAbiOgPng, "renderAbiOgPng");
     __name(renderPageOgPng, "renderPageOgPng");
@@ -22261,10 +22705,10 @@ var init_path = __esm({
   }
 });
 
-// ../.wrangler/tmp/pages-2nM5PX/functionsRoutes-0.7922177066128344.mjs
+// ../.wrangler/tmp/pages-Ricd6y/functionsRoutes-0.5207937887986309.mjs
 var routes;
-var init_functionsRoutes_0_7922177066128344 = __esm({
-  "../.wrangler/tmp/pages-2nM5PX/functionsRoutes-0.7922177066128344.mjs"() {
+var init_functionsRoutes_0_5207937887986309 = __esm({
+  "../.wrangler/tmp/pages-Ricd6y/functionsRoutes-0.5207937887986309.mjs"() {
     "use strict";
     init_getShards();
     init_blocks();
@@ -22272,6 +22716,7 @@ var init_functionsRoutes_0_7922177066128344 = __esm({
     init_transactions();
     init_id();
     init_emulations();
+    init_nft();
     init_path();
     routes = [
       {
@@ -22317,21 +22762,28 @@ var init_functionsRoutes_0_7922177066128344 = __esm({
         modules: [onRequest6]
       },
       {
+        routePath: "/media/nft",
+        mountPath: "/media",
+        method: "",
+        middlewares: [],
+        modules: [onRequest7]
+      },
+      {
         routePath: "/:path*",
         mountPath: "/",
         method: "",
         middlewares: [],
-        modules: [onRequest7]
+        modules: [onRequest8]
       }
     ];
   }
 });
 
 // ../../../node_modules/.bun/wrangler@4.100.0+acbd2503149e7860/node_modules/wrangler/templates/pages-template-worker.ts
-init_functionsRoutes_0_7922177066128344();
+init_functionsRoutes_0_5207937887986309();
 
 // ../../../node_modules/.bun/path-to-regexp@6.3.0/node_modules/path-to-regexp/dist.es2015/index.js
-init_functionsRoutes_0_7922177066128344();
+init_functionsRoutes_0_5207937887986309();
 function lexer(str) {
   var tokens = [];
   var i2 = 0;
@@ -22453,9 +22905,9 @@ function parse2(str, options) {
     }
     return false;
   }, "isSafe");
-  var safePattern = /* @__PURE__ */ __name(function(prefix2) {
+  var safePattern = /* @__PURE__ */ __name(function(prefix3) {
     var prev = result[result.length - 1];
-    var prevText = prefix2 || (prev && typeof prev === "string" ? prev : "");
+    var prevText = prefix3 || (prev && typeof prev === "string" ? prev : "");
     if (prev && !prevText) {
       throw new TypeError('Must have text between two parameters, missing text after "'.concat(prev.name, '"'));
     }
@@ -22468,10 +22920,10 @@ function parse2(str, options) {
     var name = tryConsume("NAME");
     var pattern = tryConsume("PATTERN");
     if (name || pattern) {
-      var prefix = char || "";
-      if (prefixes.indexOf(prefix) === -1) {
-        path += prefix;
-        prefix = "";
+      var prefix2 = char || "";
+      if (prefixes.indexOf(prefix2) === -1) {
+        path += prefix2;
+        prefix2 = "";
       }
       if (path) {
         result.push(path);
@@ -22479,9 +22931,9 @@ function parse2(str, options) {
       }
       result.push({
         name: name || key++,
-        prefix,
+        prefix: prefix2,
         suffix: "",
-        pattern: pattern || safePattern(prefix),
+        pattern: pattern || safePattern(prefix2),
         modifier: tryConsume("MODIFIER") || ""
       });
       continue;
@@ -22497,15 +22949,15 @@ function parse2(str, options) {
     }
     var open = tryConsume("OPEN");
     if (open) {
-      var prefix = consumeText();
+      var prefix2 = consumeText();
       var name_1 = tryConsume("NAME") || "";
       var pattern_1 = tryConsume("PATTERN") || "";
       var suffix = consumeText();
       mustConsume("CLOSE");
       result.push({
         name: name_1 || (pattern_1 ? key++ : ""),
-        pattern: name_1 && !pattern_1 ? safePattern(prefix) : pattern_1,
-        prefix,
+        pattern: name_1 && !pattern_1 ? safePattern(prefix2) : pattern_1,
+        prefix: prefix2,
         suffix,
         modifier: tryConsume("MODIFIER") || ""
       });
@@ -22608,17 +23060,17 @@ function tokensToRegexp(tokens, keys, options) {
     if (typeof token === "string") {
       route += escapeString(encode(token));
     } else {
-      var prefix = escapeString(encode(token.prefix));
+      var prefix2 = escapeString(encode(token.prefix));
       var suffix = escapeString(encode(token.suffix));
       if (token.pattern) {
         if (keys)
           keys.push(token);
-        if (prefix || suffix) {
+        if (prefix2 || suffix) {
           if (token.modifier === "+" || token.modifier === "*") {
             var mod = token.modifier === "*" ? "?" : "";
-            route += "(?:".concat(prefix, "((?:").concat(token.pattern, ")(?:").concat(suffix).concat(prefix, "(?:").concat(token.pattern, "))*)").concat(suffix, ")").concat(mod);
+            route += "(?:".concat(prefix2, "((?:").concat(token.pattern, ")(?:").concat(suffix).concat(prefix2, "(?:").concat(token.pattern, "))*)").concat(suffix, ")").concat(mod);
           } else {
-            route += "(?:".concat(prefix, "(").concat(token.pattern, ")").concat(suffix, ")").concat(token.modifier);
+            route += "(?:".concat(prefix2, "(").concat(token.pattern, ")").concat(suffix, ")").concat(token.modifier);
           }
         } else {
           if (token.modifier === "+" || token.modifier === "*") {
@@ -22627,7 +23079,7 @@ function tokensToRegexp(tokens, keys, options) {
           route += "(".concat(token.pattern, ")").concat(token.modifier);
         }
       } else {
-        route += "(?:".concat(prefix).concat(suffix, ")").concat(token.modifier);
+        route += "(?:".concat(prefix2).concat(suffix, ")").concat(token.modifier);
       }
     }
   }
