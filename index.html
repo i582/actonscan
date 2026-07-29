@@ -1,6 +1,49 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <style data-acton-theme-bootstrap="">html {
+  min-height: 100%;
+  background: hsl(240 7% 97%);
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  background: hsl(240 10% 4%);
+  color-scheme: dark;
+}
+
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: inherit;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) {
+    background: hsl(240 10% 4%);
+    color-scheme: dark;
+  }
+}</style>
+    <script data-acton-theme-bootstrap="">"use strict"
+
+;(() => {
+  let theme
+  try {
+    const storedTheme = localStorage.getItem("explorerTheme")
+    if (storedTheme === "dark" || storedTheme === "light") theme = storedTheme
+  } catch {
+    // The fallback below still prevents a theme flash when storage is unavailable.
+  }
+
+  theme ??= matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+  document.documentElement.dataset.theme = theme
+  document.documentElement.classList.toggle("dark-theme", theme === "dark")
+})()</script>
+
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
