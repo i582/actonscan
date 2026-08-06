@@ -282,6 +282,38 @@
   outline: 1px solid var(--acton-color-focus-ring);
   outline-offset: 2px;
 }
+.BlockChip_tooltip {
+  min-width: min(27rem, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--acton-space-1-5);
+}
+.BlockChip_tooltip > strong {
+  font-weight: var(--acton-font-weight-medium);
+}
+.BlockChip_tooltipRow {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 5rem minmax(0, 1fr);
+  gap: var(--acton-space-2);
+  align-items: center;
+}
+.BlockChip_tooltipRow > :first-child {
+  color: var(--acton-color-text-muted);
+  white-space: nowrap;
+}
+.BlockChip_tooltipCopyValue {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--acton-space-1);
+}
+.BlockChip_tooltipCopyValue code {
+  min-width: 0;
+  font-family: var(--acton-font-mono);
+  font-size: inherit;
+  overflow-wrap: anywhere;
+}
 
 /* ../../ui/src/components/BooleanValue/BooleanValue.module.css */
 .BooleanValue_value {
