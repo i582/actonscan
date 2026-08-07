@@ -1748,6 +1748,59 @@
   gap: var(--acton-space-1);
 }
 
+/* ../../ui/src/components/Duration/Duration.module.css */
+.Duration_trigger {
+  display: inline;
+  cursor: help;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.18em;
+  transition: text-decoration-color var(--acton-duration-fast) var(--acton-ease-standard);
+}
+.Duration_trigger:hover,
+.Duration_trigger:focus-visible {
+  text-decoration-color: var(--acton-color-border-strong);
+}
+.Duration_trigger:focus-visible {
+  border-radius: var(--acton-radius-control-sm);
+  outline: 1px solid var(--acton-color-focus-ring);
+  outline-offset: 2px;
+}
+.Duration_tooltip {
+  min-width: min(29rem, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--acton-space-1-5);
+}
+.Duration_tooltip > strong {
+  font-weight: var(--acton-font-weight-medium);
+}
+.Duration_tooltipRow {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: var(--acton-space-2);
+}
+.Duration_tooltipRow > :first-child {
+  color: var(--acton-color-text-muted);
+  white-space: nowrap;
+}
+.Duration_tooltipRow > :last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.Duration_tooltipRow code {
+  font-family: var(--acton-font-mono);
+  font-size: inherit;
+}
+.Duration_tooltipCopyValue {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--acton-space-1);
+}
+
 /* ../../ui/src/components/Disclosure/Disclosure.module.css */
 .Disclosure_disclosure {
   border-top: 1px solid var(--acton-color-border);
