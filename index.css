@@ -237,6 +237,35 @@
   opacity: 1;
   pointer-events: auto;
 }
+.AddressChip_tooltip {
+  min-width: min(27rem, 100%);
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: var(--acton-space-2);
+  row-gap: var(--acton-space-1-5);
+}
+.AddressChip_tooltipRow {
+  min-width: 0;
+  display: contents;
+}
+.AddressChip_tooltipRow > :first-child {
+  grid-column: 1;
+  color: var(--acton-color-text-muted);
+  white-space: nowrap;
+}
+.AddressChip_tooltipCopyValue {
+  grid-column: 2;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--acton-space-1);
+}
+.AddressChip_tooltipCopyValue code {
+  min-width: 0;
+  font-family: var(--acton-font-mono);
+  font-size: inherit;
+  overflow-wrap: anywhere;
+}
 @media (hover: none), (pointer: coarse) {
   .AddressChip_copyButton {
     opacity: 1;
