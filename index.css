@@ -402,6 +402,58 @@
   gap: var(--acton-space-1);
 }
 
+/* ../../ui/src/components/ByteSize/ByteSize.module.css */
+.ByteSize_trigger {
+  cursor: help;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.18em;
+  transition: text-decoration-color var(--acton-duration-fast) var(--acton-ease-standard);
+}
+.ByteSize_trigger:hover,
+.ByteSize_trigger:focus-visible {
+  text-decoration-color: var(--acton-color-border-strong);
+}
+.ByteSize_trigger:focus-visible {
+  border-radius: var(--acton-radius-control-sm);
+  outline: 1px solid var(--acton-color-focus-ring);
+  outline-offset: 2px;
+}
+.ByteSize_tooltip {
+  min-width: min(29rem, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--acton-space-1-5);
+}
+.ByteSize_tooltip > strong {
+  font-weight: var(--acton-font-weight-medium);
+}
+.ByteSize_tooltipRow {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: var(--acton-space-2);
+}
+.ByteSize_tooltipRow > :first-child {
+  color: var(--acton-color-text-muted);
+  white-space: nowrap;
+}
+.ByteSize_tooltipRow > :last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.ByteSize_tooltipRow code {
+  font-family: var(--acton-font-mono);
+  font-size: inherit;
+}
+.ByteSize_tooltipCopyValue {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--acton-space-1);
+}
+
 /* ../../ui/src/components/Button/Button.module.css */
 .Button_button {
   appearance: none;
