@@ -2173,6 +2173,13 @@
 .Dialog_contentPaddingNone {
   padding: 0;
 }
+.Dialog_scrollArea {
+  min-height: 0;
+  overflow: auto;
+}
+.Dialog_scrollArea > .Dialog_content {
+  overflow: visible;
+}
 .Dialog_actions {
   box-sizing: border-box;
   display: flex;
