@@ -1350,6 +1350,27 @@
   outline: 1px solid var(--acton-color-focus-ring);
   outline-offset: 2px;
 }
+.ContentTabs_standalone {
+  gap: var(--acton-space-4);
+}
+.ContentTabs_standalone .ContentTabs_tabList {
+  margin-bottom: 0;
+}
+.ContentTabs_standalone .ContentTabs_tab:first-child {
+  border-end-start-radius: var(--acton-radius-control-sm);
+}
+.ContentTabs_standalone .ContentTabs_tab:last-child {
+  border-end-end-radius: var(--acton-radius-control-sm);
+}
+.ContentTabs_standalone .ContentTabs_tabActive {
+  border-bottom-color: var(--acton-color-border);
+}
+.ContentTabs_standalone .ContentTabs_panel {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
 .ContentTabs_loadingStatus {
   position: absolute;
   width: 1px;
@@ -2173,12 +2194,9 @@
 .Dialog_contentPaddingNone {
   padding: 0;
 }
-.Dialog_scrollArea {
-  min-height: 0;
-  overflow: auto;
-}
-.Dialog_scrollArea > .Dialog_content {
-  overflow: visible;
+.Dialog_footer {
+  flex: 0 0 auto;
+  min-width: 0;
 }
 .Dialog_actions {
   box-sizing: border-box;
@@ -2786,7 +2804,7 @@
   display: inline-flex;
   align-items: center;
   min-width: 0;
-  gap: var(--acton-space-1-5);
+  gap: var(--acton-inline-button-gap, var(--acton-space-1-5));
   pointer-events: none;
 }
 .InlineButton_label {
