@@ -1787,7 +1787,6 @@
   -webkit-overflow-scrolling: touch;
 }
 .DataTable_embedded {
-  overflow: visible;
   border: 0;
   border-radius: inherit;
   background: transparent;
@@ -1799,12 +1798,6 @@
 }
 .DataTable_inner {
   position: relative;
-  min-width: var(--acton-data-table-min-width);
-}
-.DataTable_embedded .DataTable_inner {
-  min-width: 0;
-}
-.DataTable_nested .DataTable_inner {
   min-width: var(--acton-data-table-min-width);
 }
 .DataTable_titleBar {
