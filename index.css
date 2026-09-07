@@ -2290,27 +2290,25 @@
 }
 
 /* ../../ui/src/components/Disclosure/Disclosure.module.css */
-.Disclosure_disclosure {
-  border-top: 1px solid var(--acton-color-border);
-  border-bottom: 1px solid var(--acton-color-border);
-}
 .Disclosure_summary {
   display: flex;
   min-height: 44px;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--acton-space-2);
-  padding: var(--acton-space-2) var(--acton-space-1);
-  color: var(--acton-color-text);
+  padding: var(--acton-space-3) 0;
+  color: var(--acton-color-text-muted);
   cursor: pointer;
   list-style: none;
   border-radius: var(--acton-radius-control);
-  transition: background-color var(--acton-duration-fast) var(--acton-ease-standard), color var(--acton-duration-fast) var(--acton-ease-standard);
+  transition: color var(--acton-duration-fast) var(--acton-ease-standard);
 }
 .Disclosure_summary::-webkit-details-marker {
   display: none;
 }
-.Disclosure_summary:hover {
-  background: var(--acton-color-surface-hover);
+.Disclosure_summary:hover,
+.Disclosure_summary:focus-visible,
+.Disclosure_disclosure[open] > .Disclosure_summary {
+  color: var(--acton-color-text);
 }
 .Disclosure_summary:focus-visible {
   outline: 2px solid var(--acton-color-focus-ring);
@@ -2318,10 +2316,10 @@
 }
 .Disclosure_icon {
   flex: 0 0 auto;
-  color: var(--acton-color-text-muted);
+  margin-top: calc((var(--acton-font-size-sm) * 1.35 - 16px) / 2);
   transition: transform var(--acton-duration-fast) var(--acton-ease-standard);
 }
-.Disclosure_disclosure[open] .Disclosure_icon {
+.Disclosure_disclosure[open] > .Disclosure_summary > .Disclosure_icon {
   transform: rotate(90deg);
 }
 .Disclosure_summaryBody {
@@ -2330,7 +2328,7 @@
   gap: 2px;
 }
 .Disclosure_label {
-  color: var(--acton-color-text);
+  color: inherit;
   font-size: var(--acton-font-size-sm);
   font-weight: var(--acton-font-weight-medium);
   line-height: 1.35;
@@ -2341,7 +2339,7 @@
   line-height: 1.4;
 }
 .Disclosure_content {
-  padding: var(--acton-space-2) var(--acton-space-1) var(--acton-space-5) calc(var(--acton-space-1) + 24px);
+  padding: var(--acton-space-2) 0 var(--acton-space-4) calc(16px + var(--acton-space-2));
 }
 
 /* ../../ui/src/components/DisclosureToggle/DisclosureToggle.module.css */
