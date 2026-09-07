@@ -2853,13 +2853,13 @@
   border: 1px solid transparent;
   border-radius: var(--acton-radius-round);
   background: var(--acton-color-surface-raised);
-  color: var(--acton-color-text);
+  color: inherit;
   transition: background-color var(--acton-duration-fast) var(--acton-ease-standard), color var(--acton-duration-fast) var(--acton-ease-standard);
 }
 .InfoPopover_infoPopover:hover .InfoPopover_button,
 .InfoPopover_infoPopover:focus-visible .InfoPopover_button {
   background: var(--acton-color-surface-hover);
-  color: var(--acton-color-text);
+  color: inherit;
 }
 .InfoPopover_panel {
   width: min(26.25rem, var(--available-width));
