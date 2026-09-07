@@ -2250,6 +2250,45 @@
   gap: var(--acton-space-1);
 }
 
+/* ../../ui/src/components/EmptyState/EmptyState.module.css */
+.EmptyState_emptyState {
+  display: grid;
+  justify-items: center;
+  gap: var(--acton-space-2);
+  padding: var(--acton-space-8) var(--acton-space-4);
+  text-align: center;
+}
+.EmptyState_icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: var(--acton-space-1);
+  color: var(--acton-color-text-muted);
+  background: var(--acton-color-surface-group);
+  border: 1px solid var(--acton-color-border);
+  border-radius: 12px;
+}
+.EmptyState_title {
+  color: var(--acton-color-text);
+  font-size: var(--acton-font-size-sm);
+  font-weight: var(--acton-font-weight-semibold);
+  line-height: 1.35;
+}
+.EmptyState_description {
+  max-width: 30rem;
+  color: var(--acton-color-text-muted);
+  font-size: var(--acton-font-size-xs);
+  line-height: 1.45;
+}
+.EmptyState_action {
+  margin-top: var(--acton-space-2);
+}
+.EmptyState_emptyState[data-variant=error] .EmptyState_icon {
+  color: var(--acton-color-status-failed-text);
+  border-color: color-mix(in srgb, var(--acton-color-status-failed-text) 45%, transparent);
+}
+
 /* ../../ui/src/components/Disclosure/Disclosure.module.css */
 .Disclosure_disclosure {
   border-top: 1px solid var(--acton-color-border);
