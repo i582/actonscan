@@ -2291,6 +2291,7 @@
 
 /* ../../ui/src/components/Disclosure/Disclosure.module.css */
 .Disclosure_summary {
+  box-sizing: border-box;
   display: flex;
   min-height: 44px;
   align-items: flex-start;
