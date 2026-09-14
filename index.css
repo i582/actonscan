@@ -1252,10 +1252,10 @@
   border-right: 1px solid var(--acton-color-border);
   background: var(--acton-color-code-chrome);
 }
-.CodeViewer_desktopTreeToggle,
-.CodeViewer_desktopTreeExpand {
+.CodeViewer_desktopTreeToggle {
   appearance: none;
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   width: 1.75rem;
@@ -1268,24 +1268,15 @@
   cursor: pointer;
   transition: background-color var(--acton-duration-fast) var(--acton-ease-standard), color var(--acton-duration-fast) var(--acton-ease-standard);
 }
-.CodeViewer_desktopTreeToggle {
-  position: absolute;
-  z-index: 2;
-  top: var(--acton-space-2);
-  right: var(--acton-space-2);
-}
-.CodeViewer_desktopTreeToggle:hover,
-.CodeViewer_desktopTreeExpand:hover {
+.CodeViewer_desktopTreeToggle:hover {
   background: var(--acton-color-surface-hover);
   color: var(--acton-color-text);
 }
-.CodeViewer_desktopTreeToggle:focus-visible,
-.CodeViewer_desktopTreeExpand:focus-visible {
+.CodeViewer_desktopTreeToggle:focus-visible {
   outline: 1px solid var(--acton-color-focus-ring);
   outline-offset: -1px;
 }
-.CodeViewer_desktopTreeToggle svg,
-.CodeViewer_desktopTreeExpand svg {
+.CodeViewer_desktopTreeToggle svg {
   width: 1rem;
   height: 1rem;
   color: inherit;
@@ -1519,8 +1510,7 @@
   .CodeViewer_desktopFileTree {
     display: none;
   }
-  .CodeViewer_desktopTreeToggle,
-  .CodeViewer_desktopTreeExpand {
+  .CodeViewer_desktopTreeToggle {
     display: none;
   }
   .CodeViewer_mobileTreeToggle {
