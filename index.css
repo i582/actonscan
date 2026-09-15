@@ -273,6 +273,174 @@
   }
 }
 
+/* ../../ui/src/components/Banner/Banner.module.css */
+.Banner_banner {
+  position: relative;
+  z-index: 30;
+  width: 100%;
+  border-bottom: 1px solid color-mix(in srgb, white 18%, transparent);
+  background-color: color-mix(in srgb, var(--acton-color-accent) 82%, #1746b6);
+  background-image:
+    linear-gradient(color-mix(in srgb, white 8%, transparent) 1px, transparent 1px),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, white 8%, transparent) 1px,
+      transparent 1px);
+  background-size: 28px 28px;
+  color: white;
+}
+.Banner_inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1136px;
+  min-height: 36px;
+  margin-inline: auto;
+  padding: 6px 48px;
+}
+.Banner_message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  margin: 0;
+  gap: 7px;
+  color: inherit;
+  font-size: var(--acton-font-size-xs);
+  line-height: 1.35;
+  text-align: center;
+}
+.Banner_title {
+  font-weight: var(--acton-font-weight-bold);
+}
+.Banner_compactTitle {
+  display: none;
+}
+.Banner_icon {
+  display: block;
+  flex: 0 0 auto;
+}
+.Banner_icon > svg {
+  display: block;
+}
+.Banner_separator {
+  opacity: 0.58;
+}
+.Banner_action {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+  border-radius: 4px;
+  color: inherit;
+  font-weight: var(--acton-font-weight-emphasis);
+  white-space: nowrap;
+}
+.Banner_action > :where(a, button) {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: inherit;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, white 58%, transparent);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--acton-duration-fast);
+}
+.Banner_action > button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.Banner_action > :where(a, button):hover {
+  text-decoration-color: white;
+}
+.Banner_action > :where(a, button):focus-visible,
+.Banner_closeButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px white;
+}
+.Banner_closeButton {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.72;
+  transform: translateY(calc(-50% + 1px));
+  transition: background-color var(--acton-duration-fast), opacity var(--acton-duration-fast);
+}
+.Banner_closeButton:hover {
+  background: color-mix(in srgb, white 12%, transparent);
+  opacity: 1;
+}
+.Banner_closeButton svg {
+  display: block;
+}
+@media (max-width: 720px) {
+  .Banner_inner {
+    justify-content: flex-start;
+    min-height: 44px;
+    padding: 7px 48px 7px 16px;
+  }
+  .Banner_message {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 2px 6px;
+    text-align: left;
+  }
+  .Banner_icon,
+  .Banner_title {
+    align-self: center;
+  }
+  .Banner_desktopTitle {
+    display: none;
+  }
+  .Banner_compactTitle {
+    display: inline;
+  }
+  .Banner_separator {
+    display: none;
+  }
+}
+@media (max-width: 520px) {
+  .Banner_inner {
+    min-height: 40px;
+  }
+  .Banner_message {
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+  .Banner_title {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .Banner_action {
+    margin-left: auto;
+  }
+  .Banner_description,
+  .Banner_separator {
+    display: none;
+  }
+}
+
 /* ../../ui/src/components/BlockChip/BlockChip.module.css */
 .BlockChip_blockCluster.BlockChip_blockCluster {
   max-width: 100%;
