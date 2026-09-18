@@ -218,7 +218,7 @@ var HISTORICAL_DATA_CACHE_CONTROL, INT32_MIN, INT32_MAX, INT64_MIN, INT64_MAX;
 var init_toncenterProxy = __esm({
   "../worker/toncenterProxy.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     HISTORICAL_DATA_CACHE_CONTROL = "public, max-age=300, s-maxage=604800, immutable";
     INT32_MIN = -2147483648n;
     INT32_MAX = 2147483647n;
@@ -322,7 +322,7 @@ var PARAMETER_NAMES, PARAMETER_SET, REQUIRED_PARAMETER_SET;
 var init_getBlockTransactions = __esm({
   "api/toncenter/[network]/v2/getBlockTransactions.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_toncenterProxy();
     PARAMETER_NAMES = [
       "workchain",
@@ -376,7 +376,7 @@ function isNonEmptyShardsResponse(value) {
 var init_getShards = __esm({
   "api/toncenter/[network]/v2/getShards.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_toncenterProxy();
     __name(onRequest2, "onRequest");
     __name(isNonEmptyShardsResponse, "isNonEmptyShardsResponse");
@@ -467,7 +467,7 @@ var LATEST_BLOCKS_CACHE_CONTROL, BLOCK_PARAMETER_NAMES, BLOCK_PARAMETER_SET;
 var init_blocks = __esm({
   "api/toncenter/[network]/v3/blocks.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_toncenterProxy();
     LATEST_BLOCKS_CACHE_CONTROL = "public, max-age=0, s-maxage=2, must-revalidate";
     BLOCK_PARAMETER_NAMES = [
@@ -557,7 +557,7 @@ var TRANSACTION_HASH_PATTERN, COMPLETE_TRACE_CACHE_CONTROL;
 var init_traces = __esm({
   "api/toncenter/[network]/v3/traces.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_toncenterProxy();
     TRANSACTION_HASH_PATTERN = /^[0-9a-f]{64}$/i;
     COMPLETE_TRACE_CACHE_CONTROL = "public, max-age=300, s-maxage=604800";
@@ -635,7 +635,7 @@ var TRANSACTION_PARAMETER_NAMES, TRANSACTION_PARAMETER_SET, REQUIRED_TRANSACTION
 var init_transactions = __esm({
   "api/toncenter/[network]/v3/transactions.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_toncenterProxy();
     TRANSACTION_PARAMETER_NAMES = ["workchain", "shard", "seqno", "limit", "offset"];
     TRANSACTION_PARAMETER_SET = new Set(TRANSACTION_PARAMETER_NAMES);
@@ -647,46 +647,691 @@ var init_transactions = __esm({
   }
 });
 
-// ../../explorer-core/src/pages/emulateNavigationPayload.ts
-function readEmulateNavigationPayload(state) {
-  if (!isRecord2(state) || !isRecord2(state.emulatePayload)) {
-    return void 0;
-  }
-  const payload = state.emulatePayload;
-  if (payload.inputMode !== "builder" && payload.inputMode !== "raw" || typeof payload.targetAddress !== "string" || typeof payload.sourceAddress !== "string" || typeof payload.messageValue !== "string" || payload.messageTransport !== "internal" && payload.messageTransport !== "external" || typeof payload.bounce !== "boolean" || typeof payload.mcSeqnoInput !== "string" || typeof payload.rawMessage !== "string") {
-    return void 0;
-  }
-  const common = {
-    targetAddress: payload.targetAddress,
-    sourceAddress: payload.sourceAddress,
-    messageValue: payload.messageValue,
-    messageTransport: payload.messageTransport,
-    bounce: payload.bounce,
-    mcSeqnoInput: payload.mcSeqnoInput,
-    rawMessage: payload.rawMessage
-  };
-  if (payload.inputMode === "raw") {
-    return { ...common, inputMode: "raw" };
-  }
-  const builder = payload.builder;
-  if (!isRecord2(builder) || builder.abi !== void 0 && !isContractAbi(builder.abi) || builder.abiSourceMode !== "auto" && builder.abiSourceMode !== "manual" || builder.abiSourceMode === "manual" && builder.abi === void 0 || builder.abiEndpoint !== "destination" && builder.abiEndpoint !== "source" || typeof builder.messageName !== "string" || typeof builder.argsJson !== "string" || !isJson(builder.argsJson)) {
-    return void 0;
-  }
+// ../../../node_modules/.bun/valibot@1.5.0+ff0372d108591aba/node_modules/valibot/dist/index.mjs
+// @__NO_SIDE_EFFECTS__
+function getGlobalConfig(config$1) {
+  if (!config$1 && !store$4) return DEFAULT_CONFIG;
   return {
-    ...common,
-    inputMode: "builder",
-    builder: {
-      abi: builder.abi,
-      abiSourceMode: builder.abiSourceMode,
-      abiEndpoint: builder.abiEndpoint,
-      messageName: builder.messageName,
-      argsJson: builder.argsJson
+    lang: config$1?.lang ?? store$4?.lang,
+    message: config$1?.message,
+    abortEarly: config$1?.abortEarly ?? store$4?.abortEarly,
+    abortPipeEarly: config$1?.abortPipeEarly ?? store$4?.abortPipeEarly
+  };
+}
+// @__NO_SIDE_EFFECTS__
+function getGlobalMessage(lang) {
+  return store$3?.get(lang);
+}
+// @__NO_SIDE_EFFECTS__
+function getSchemaMessage(lang) {
+  return store$2?.get(lang);
+}
+// @__NO_SIDE_EFFECTS__
+function getSpecificMessage(reference, lang) {
+  return store$1?.get(reference)?.get(lang);
+}
+// @__NO_SIDE_EFFECTS__
+function _stringify(input) {
+  const type = typeof input;
+  if (type === "string") return `"${input}"`;
+  if (type === "number" || type === "bigint" || type === "boolean") return `${input}`;
+  if (type === "object" || type === "function") return (input && Object.getPrototypeOf(input)?.constructor?.name) ?? "null";
+  return type;
+}
+function _addIssue(context, label, dataset, config$1, other) {
+  const input = other && "input" in other ? other.input : dataset.value;
+  const expected = other?.expected ?? context.expects ?? null;
+  const received = other?.received ?? /* @__PURE__ */ _stringify(input);
+  const issue = {
+    kind: context.kind,
+    type: context.type,
+    input,
+    expected,
+    received,
+    message: `Invalid ${label}: ${expected ? `Expected ${expected} but r` : "R"}eceived ${received}`,
+    requirement: context.requirement,
+    path: other?.path,
+    issues: other?.issues,
+    lang: config$1.lang,
+    abortEarly: config$1.abortEarly,
+    abortPipeEarly: config$1.abortPipeEarly
+  };
+  const isSchema = context.kind === "schema";
+  const message$1 = other?.message ?? context.message ?? /* @__PURE__ */ getSpecificMessage(context.reference, issue.lang) ?? (isSchema ? /* @__PURE__ */ getSchemaMessage(issue.lang) : null) ?? config$1.message ?? /* @__PURE__ */ getGlobalMessage(issue.lang);
+  if (message$1 !== void 0) issue.message = typeof message$1 === "function" ? message$1(issue) : message$1;
+  if (isSchema) dataset.typed = false;
+  if (dataset.issues) dataset.issues.push(issue);
+  else dataset.issues = [issue];
+}
+// @__NO_SIDE_EFFECTS__
+function _isSameValueZero(value1, value2) {
+  return value1 === value2 || Number.isNaN(value1) && Number.isNaN(value2);
+}
+// @__NO_SIDE_EFFECTS__
+function _isValidObjectKey(object$1, key) {
+  return Object.prototype.hasOwnProperty.call(object$1, key) && key !== "__proto__" && key !== "prototype" && key !== "constructor";
+}
+// @__NO_SIDE_EFFECTS__
+function _joinExpects(values$1, separator) {
+  const list = [...new Set(values$1)];
+  if (list.length > 1) return `(${list.join(` ${separator} `)})`;
+  return list[0] ?? "never";
+}
+function _standardSchema(schema) {
+  schema["~standard"] = {
+    version: 1,
+    vendor: "valibot",
+    validate: /* @__PURE__ */ __name((value$1) => schema["~run"]({ value: value$1 }, /* @__PURE__ */ getGlobalConfig()), "validate")
+  };
+  return schema;
+}
+// @__NO_SIDE_EFFECTS__
+function check(requirement, message$1) {
+  return {
+    kind: "validation",
+    type: "check",
+    reference: check,
+    async: false,
+    expects: null,
+    requirement,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      if (dataset.typed && !this.requirement(dataset.value)) _addIssue(this, "input", dataset, config$1);
+      return dataset;
     }
   };
 }
-function isContractAbi(value) {
-  return isRecord2(value) && typeof value.contract_name === "string" && value.contract_name.length > 0 && typeof value.compiler_name === "string" && typeof value.compiler_version === "string" && isRecord2(value.storage) && Array.isArray(value.unique_types) && Array.isArray(value.struct_instantiations) && Array.isArray(value.alias_instantiations) && Array.isArray(value.declarations) && Array.isArray(value.incoming_messages) && Array.isArray(value.incoming_external) && Array.isArray(value.outgoing_messages) && Array.isArray(value.emitted_events) && Array.isArray(value.get_methods) && Array.isArray(value.thrown_errors);
+// @__NO_SIDE_EFFECTS__
+function finite(message$1) {
+  return {
+    kind: "validation",
+    type: "finite",
+    reference: finite,
+    async: false,
+    expects: null,
+    requirement: Number.isFinite,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      if (dataset.typed && !this.requirement(dataset.value)) _addIssue(this, "finite", dataset, config$1);
+      return dataset;
+    }
+  };
 }
+// @__NO_SIDE_EFFECTS__
+function gtValue(requirement, message$1) {
+  return {
+    kind: "validation",
+    type: "gt_value",
+    reference: gtValue,
+    async: false,
+    expects: `>${requirement instanceof Date ? requirement.toJSON() : /* @__PURE__ */ _stringify(requirement)}`,
+    requirement,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      if (dataset.typed && !(dataset.value > this.requirement)) _addIssue(this, "value", dataset, config$1, { received: dataset.value instanceof Date ? dataset.value.toJSON() : /* @__PURE__ */ _stringify(dataset.value) });
+      return dataset;
+    }
+  };
+}
+// @__NO_SIDE_EFFECTS__
+function integer(message$1) {
+  return {
+    kind: "validation",
+    type: "integer",
+    reference: integer,
+    async: false,
+    expects: null,
+    requirement: Number.isInteger,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      if (dataset.typed && !this.requirement(dataset.value)) _addIssue(this, "integer", dataset, config$1);
+      return dataset;
+    }
+  };
+}
+// @__NO_SIDE_EFFECTS__
+function maxEntries(requirement, message$1) {
+  return {
+    kind: "validation",
+    type: "max_entries",
+    reference: maxEntries,
+    async: false,
+    expects: `<=${requirement}`,
+    requirement,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      if (!dataset.typed) return dataset;
+      const count = Object.keys(dataset.value).length;
+      if (dataset.typed && count > this.requirement) _addIssue(this, "entries", dataset, config$1, { received: `${count}` });
+      return dataset;
+    }
+  };
+}
+// @__NO_SIDE_EFFECTS__
+function maxValue(requirement, message$1) {
+  return {
+    kind: "validation",
+    type: "max_value",
+    reference: maxValue,
+    async: false,
+    expects: `<=${requirement instanceof Date ? requirement.toJSON() : /* @__PURE__ */ _stringify(requirement)}`,
+    requirement,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      if (dataset.typed && !(dataset.value <= this.requirement)) _addIssue(this, "value", dataset, config$1, { received: dataset.value instanceof Date ? dataset.value.toJSON() : /* @__PURE__ */ _stringify(dataset.value) });
+      return dataset;
+    }
+  };
+}
+// @__NO_SIDE_EFFECTS__
+function minValue(requirement, message$1) {
+  return {
+    kind: "validation",
+    type: "min_value",
+    reference: minValue,
+    async: false,
+    expects: `>=${requirement instanceof Date ? requirement.toJSON() : /* @__PURE__ */ _stringify(requirement)}`,
+    requirement,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      if (dataset.typed && !(dataset.value >= this.requirement)) _addIssue(this, "value", dataset, config$1, { received: dataset.value instanceof Date ? dataset.value.toJSON() : /* @__PURE__ */ _stringify(dataset.value) });
+      return dataset;
+    }
+  };
+}
+// @__NO_SIDE_EFFECTS__
+function nonEmpty(message$1) {
+  return {
+    kind: "validation",
+    type: "non_empty",
+    reference: nonEmpty,
+    async: false,
+    expects: "!0",
+    message: message$1,
+    "~run"(dataset, config$1) {
+      if (dataset.typed && dataset.value.length === 0) _addIssue(this, "length", dataset, config$1, { received: "0" });
+      return dataset;
+    }
+  };
+}
+// @__NO_SIDE_EFFECTS__
+function transform(operation) {
+  return {
+    kind: "transformation",
+    type: "transform",
+    reference: transform,
+    async: false,
+    operation,
+    "~run"(dataset) {
+      dataset.value = this.operation(dataset.value);
+      return dataset;
+    }
+  };
+}
+// @__NO_SIDE_EFFECTS__
+function getFallback(schema, dataset, config$1) {
+  return typeof schema.fallback === "function" ? schema.fallback(dataset, config$1) : schema.fallback;
+}
+// @__NO_SIDE_EFFECTS__
+function getDefault(schema, dataset, config$1) {
+  return typeof schema.default === "function" ? schema.default(dataset, config$1) : schema.default;
+}
+// @__NO_SIDE_EFFECTS__
+function is(schema, input) {
+  return !schema["~run"]({ value: input }, ABORT_EARLY_CONFIG).issues;
+}
+// @__NO_SIDE_EFFECTS__
+function array(item, message$1) {
+  return _standardSchema({
+    kind: "schema",
+    type: "array",
+    reference: array,
+    expects: "Array",
+    async: false,
+    item,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      const input = dataset.value;
+      if (Array.isArray(input)) {
+        dataset.typed = true;
+        dataset.value = [];
+        for (let key = 0; key < input.length; key++) {
+          const value$1 = input[key];
+          const itemDataset = this.item["~run"]({ value: value$1 }, config$1);
+          if (itemDataset.issues) {
+            const pathItem = {
+              type: "array",
+              origin: "value",
+              input,
+              key,
+              value: value$1
+            };
+            for (const issue of itemDataset.issues) {
+              if (issue.path) issue.path.unshift(pathItem);
+              else issue.path = [pathItem];
+              dataset.issues?.push(issue);
+            }
+            if (!dataset.issues) dataset.issues = itemDataset.issues;
+            if (config$1.abortEarly) {
+              dataset.typed = false;
+              break;
+            }
+          }
+          if (!itemDataset.typed) dataset.typed = false;
+          dataset.value.push(itemDataset.value);
+        }
+      } else _addIssue(this, "type", dataset, config$1);
+      return dataset;
+    }
+  });
+}
+// @__NO_SIDE_EFFECTS__
+function boolean(message$1) {
+  return _standardSchema({
+    kind: "schema",
+    type: "boolean",
+    reference: boolean,
+    expects: "boolean",
+    async: false,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      if (typeof dataset.value === "boolean") dataset.typed = true;
+      else _addIssue(this, "type", dataset, config$1);
+      return dataset;
+    }
+  });
+}
+// @__NO_SIDE_EFFECTS__
+function custom(check$1, message$1) {
+  return _standardSchema({
+    kind: "schema",
+    type: "custom",
+    reference: custom,
+    expects: "unknown",
+    async: false,
+    check: check$1,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      if (this.check(dataset.value)) dataset.typed = true;
+      else _addIssue(this, "type", dataset, config$1);
+      return dataset;
+    }
+  });
+}
+// @__NO_SIDE_EFFECTS__
+function literal(literal_, message$1) {
+  return _standardSchema({
+    kind: "schema",
+    type: "literal",
+    reference: literal,
+    expects: /* @__PURE__ */ _stringify(literal_),
+    async: false,
+    literal: literal_,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      if (/* @__PURE__ */ _isSameValueZero(dataset.value, this.literal)) dataset.typed = true;
+      else _addIssue(this, "type", dataset, config$1);
+      return dataset;
+    }
+  });
+}
+// @__NO_SIDE_EFFECTS__
+function number(message$1) {
+  return _standardSchema({
+    kind: "schema",
+    type: "number",
+    reference: number,
+    expects: "number",
+    async: false,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      if (typeof dataset.value === "number" && !isNaN(dataset.value)) dataset.typed = true;
+      else _addIssue(this, "type", dataset, config$1);
+      return dataset;
+    }
+  });
+}
+// @__NO_SIDE_EFFECTS__
+function object(entries$1, message$1) {
+  return _standardSchema({
+    kind: "schema",
+    type: "object",
+    reference: object,
+    expects: "Object",
+    async: false,
+    entries: entries$1,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      const input = dataset.value;
+      if (input && typeof input === "object") {
+        dataset.typed = true;
+        dataset.value = {};
+        for (const key in this.entries) {
+          const valueSchema = this.entries[key];
+          if (key in input || (valueSchema.type === "exact_optional" || valueSchema.type === "optional" || valueSchema.type === "nullish") && valueSchema.default !== void 0) {
+            const value$1 = key in input ? input[key] : /* @__PURE__ */ getDefault(valueSchema);
+            const valueDataset = valueSchema["~run"]({ value: value$1 }, config$1);
+            if (valueDataset.issues) {
+              const pathItem = {
+                type: "object",
+                origin: "value",
+                input,
+                key,
+                value: value$1
+              };
+              for (const issue of valueDataset.issues) {
+                if (issue.path) issue.path.unshift(pathItem);
+                else issue.path = [pathItem];
+                dataset.issues?.push(issue);
+              }
+              if (!dataset.issues) dataset.issues = valueDataset.issues;
+              if (config$1.abortEarly) {
+                dataset.typed = false;
+                break;
+              }
+            }
+            if (!valueDataset.typed) dataset.typed = false;
+            dataset.value[key] = valueDataset.value;
+          } else if (valueSchema.fallback !== void 0) dataset.value[key] = /* @__PURE__ */ getFallback(valueSchema);
+          else if (valueSchema.type !== "exact_optional" && valueSchema.type !== "optional" && valueSchema.type !== "nullish") {
+            _addIssue(this, "key", dataset, config$1, {
+              input: void 0,
+              expected: `"${key}"`,
+              path: [{
+                type: "object",
+                origin: "key",
+                input,
+                key,
+                value: input[key]
+              }]
+            });
+            if (config$1.abortEarly) break;
+          }
+        }
+      } else _addIssue(this, "type", dataset, config$1);
+      return dataset;
+    }
+  });
+}
+// @__NO_SIDE_EFFECTS__
+function optional(wrapped, default_) {
+  return _standardSchema({
+    kind: "schema",
+    type: "optional",
+    reference: optional,
+    expects: `(${wrapped.expects} | undefined)`,
+    async: false,
+    wrapped,
+    default: default_,
+    "~run"(dataset, config$1) {
+      if (dataset.value === void 0) {
+        if (this.default !== void 0) dataset.value = /* @__PURE__ */ getDefault(this, dataset, config$1);
+        if (dataset.value === void 0) {
+          dataset.typed = true;
+          return dataset;
+        }
+      }
+      return this.wrapped["~run"](dataset, config$1);
+    }
+  });
+}
+// @__NO_SIDE_EFFECTS__
+function picklist(options, message$1) {
+  return _standardSchema({
+    kind: "schema",
+    type: "picklist",
+    reference: picklist,
+    expects: /* @__PURE__ */ _joinExpects(options.map(_stringify), "|"),
+    async: false,
+    options,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      if (this.options.includes(dataset.value)) dataset.typed = true;
+      else _addIssue(this, "type", dataset, config$1);
+      return dataset;
+    }
+  });
+}
+// @__NO_SIDE_EFFECTS__
+function record(key, value$1, message$1) {
+  return _standardSchema({
+    kind: "schema",
+    type: "record",
+    reference: record,
+    expects: "Object",
+    async: false,
+    key,
+    value: value$1,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      const input = dataset.value;
+      if (input && typeof input === "object") {
+        dataset.typed = true;
+        dataset.value = {};
+        for (const entryKey in input) if (/* @__PURE__ */ _isValidObjectKey(input, entryKey)) {
+          const entryValue = input[entryKey];
+          const keyDataset = this.key["~run"]({ value: entryKey }, config$1);
+          if (keyDataset.issues) {
+            const pathItem = {
+              type: "object",
+              origin: "key",
+              input,
+              key: entryKey,
+              value: entryValue
+            };
+            for (const issue of keyDataset.issues) {
+              issue.path = [pathItem];
+              dataset.issues?.push(issue);
+            }
+            if (!dataset.issues) dataset.issues = keyDataset.issues;
+            if (config$1.abortEarly) {
+              dataset.typed = false;
+              break;
+            }
+          }
+          const valueDataset = this.value["~run"]({ value: entryValue }, config$1);
+          if (valueDataset.issues) {
+            const pathItem = {
+              type: "object",
+              origin: "value",
+              input,
+              key: entryKey,
+              value: entryValue
+            };
+            for (const issue of valueDataset.issues) {
+              if (issue.path) issue.path.unshift(pathItem);
+              else issue.path = [pathItem];
+              dataset.issues?.push(issue);
+            }
+            if (!dataset.issues) dataset.issues = valueDataset.issues;
+            if (config$1.abortEarly) {
+              dataset.typed = false;
+              break;
+            }
+          }
+          if (!keyDataset.typed || !valueDataset.typed) dataset.typed = false;
+          if (keyDataset.typed) dataset.value[keyDataset.value] = valueDataset.value;
+        }
+      } else _addIssue(this, "type", dataset, config$1);
+      return dataset;
+    }
+  });
+}
+// @__NO_SIDE_EFFECTS__
+function string(message$1) {
+  return _standardSchema({
+    kind: "schema",
+    type: "string",
+    reference: string,
+    expects: "string",
+    async: false,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      if (typeof dataset.value === "string") dataset.typed = true;
+      else _addIssue(this, "type", dataset, config$1);
+      return dataset;
+    }
+  });
+}
+// @__NO_SIDE_EFFECTS__
+function unknown() {
+  return _standardSchema({
+    kind: "schema",
+    type: "unknown",
+    reference: unknown,
+    expects: "unknown",
+    async: false,
+    "~run"(dataset) {
+      dataset.typed = true;
+      return dataset;
+    }
+  });
+}
+// @__NO_SIDE_EFFECTS__
+function variant(key, options, message$1) {
+  return _standardSchema({
+    kind: "schema",
+    type: "variant",
+    reference: variant,
+    expects: "Object",
+    async: false,
+    key,
+    options,
+    message: message$1,
+    "~run"(dataset, config$1) {
+      const input = dataset.value;
+      if (input && typeof input === "object") {
+        let outputDataset;
+        let maxDiscriminatorPriority = 0;
+        let invalidDiscriminatorKey = this.key;
+        let expectedDiscriminators = [];
+        const parseOptions = /* @__PURE__ */ __name((variant$1, allKeys) => {
+          for (const schema of variant$1.options) {
+            if (schema.type === "variant") parseOptions(schema, new Set(allKeys).add(schema.key));
+            else {
+              let keysAreValid = true;
+              let currentPriority = 0;
+              for (const currentKey of allKeys) {
+                const discriminatorSchema = schema.entries[currentKey];
+                if (currentKey in input ? discriminatorSchema["~run"]({
+                  typed: false,
+                  value: input[currentKey]
+                }, ABORT_EARLY_CONFIG).issues : discriminatorSchema.type !== "exact_optional" && discriminatorSchema.type !== "optional" && discriminatorSchema.type !== "nullish") {
+                  keysAreValid = false;
+                  if (invalidDiscriminatorKey !== currentKey && (maxDiscriminatorPriority < currentPriority || maxDiscriminatorPriority === currentPriority && currentKey in input && !(invalidDiscriminatorKey in input))) {
+                    maxDiscriminatorPriority = currentPriority;
+                    invalidDiscriminatorKey = currentKey;
+                    expectedDiscriminators = [];
+                  }
+                  if (invalidDiscriminatorKey === currentKey) expectedDiscriminators.push(schema.entries[currentKey].expects);
+                  break;
+                }
+                currentPriority++;
+              }
+              if (keysAreValid) {
+                const optionDataset = schema["~run"]({ value: input }, config$1);
+                if (!outputDataset || !outputDataset.typed && optionDataset.typed) outputDataset = optionDataset;
+              }
+            }
+            if (outputDataset && !outputDataset.issues) break;
+          }
+        }, "parseOptions");
+        parseOptions(this, /* @__PURE__ */ new Set([this.key]));
+        if (outputDataset) return outputDataset;
+        _addIssue(this, "type", dataset, config$1, {
+          input: input[invalidDiscriminatorKey],
+          expected: /* @__PURE__ */ _joinExpects(expectedDiscriminators, "|"),
+          path: [{
+            type: "object",
+            origin: "value",
+            input,
+            key: invalidDiscriminatorKey,
+            value: input[invalidDiscriminatorKey]
+          }]
+        });
+      } else _addIssue(this, "type", dataset, config$1);
+      return dataset;
+    }
+  });
+}
+// @__NO_SIDE_EFFECTS__
+function pipe(...pipe$1) {
+  return _standardSchema({
+    ...pipe$1[0],
+    pipe: pipe$1,
+    "~run"(dataset, config$1) {
+      for (const item of pipe$1) if (item.kind !== "metadata") {
+        if (dataset.issues && (item.kind === "schema" || item.kind === "transformation")) {
+          dataset.typed = false;
+          break;
+        }
+        if (!dataset.issues || !config$1.abortEarly && !config$1.abortPipeEarly) dataset = item["~run"](dataset, config$1);
+      }
+      return dataset;
+    }
+  });
+}
+// @__NO_SIDE_EFFECTS__
+function safeParse(schema, input, config$1) {
+  const dataset = schema["~run"]({ value: input }, /* @__PURE__ */ getGlobalConfig(config$1));
+  return {
+    typed: dataset.typed,
+    success: !dataset.issues,
+    output: dataset.value,
+    issues: dataset.issues
+  };
+}
+var store$4, DEFAULT_CONFIG, store$3, store$2, store$1, ABORT_EARLY_CONFIG;
+var init_dist = __esm({
+  "../../../node_modules/.bun/valibot@1.5.0+ff0372d108591aba/node_modules/valibot/dist/index.mjs"() {
+    init_functionsRoutes_0_26758600743728933();
+    DEFAULT_CONFIG = {
+      lang: void 0,
+      message: void 0,
+      abortEarly: void 0,
+      abortPipeEarly: void 0
+    };
+    __name(getGlobalConfig, "getGlobalConfig");
+    __name(getGlobalMessage, "getGlobalMessage");
+    __name(getSchemaMessage, "getSchemaMessage");
+    __name(getSpecificMessage, "getSpecificMessage");
+    __name(_stringify, "_stringify");
+    __name(_addIssue, "_addIssue");
+    __name(_isSameValueZero, "_isSameValueZero");
+    __name(_isValidObjectKey, "_isValidObjectKey");
+    __name(_joinExpects, "_joinExpects");
+    __name(_standardSchema, "_standardSchema");
+    __name(check, "check");
+    __name(finite, "finite");
+    __name(gtValue, "gtValue");
+    __name(integer, "integer");
+    __name(maxEntries, "maxEntries");
+    __name(maxValue, "maxValue");
+    __name(minValue, "minValue");
+    __name(nonEmpty, "nonEmpty");
+    __name(transform, "transform");
+    ABORT_EARLY_CONFIG = { abortEarly: true };
+    __name(getFallback, "getFallback");
+    __name(getDefault, "getDefault");
+    __name(is, "is");
+    __name(array, "array");
+    __name(boolean, "boolean");
+    __name(custom, "custom");
+    __name(literal, "literal");
+    __name(number, "number");
+    __name(object, "object");
+    __name(optional, "optional");
+    __name(picklist, "picklist");
+    __name(record, "record");
+    __name(string, "string");
+    __name(unknown, "unknown");
+    __name(variant, "variant");
+    __name(pipe, "pipe");
+    __name(safeParse, "safeParse");
+  }
+});
+
+// ../../explorer-core/src/pages/emulateNavigationPayload.ts
 function isJson(value) {
   try {
     JSON.parse(value);
@@ -695,121 +1340,132 @@ function isJson(value) {
     return false;
   }
 }
-function isRecord2(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
+var ContractAbiEnvelopeSchema, CommonPayloadEntries, EmulateNavigationPayloadSchema, NavigationStateSchema;
 var init_emulateNavigationPayload = __esm({
   "../../explorer-core/src/pages/emulateNavigationPayload.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
-    __name(readEmulateNavigationPayload, "readEmulateNavigationPayload");
-    __name(isContractAbi, "isContractAbi");
+    init_functionsRoutes_0_26758600743728933();
+    init_dist();
+    ContractAbiEnvelopeSchema = object({
+      contract_name: string(),
+      compiler_name: string(),
+      compiler_version: string(),
+      storage: pipe(
+        unknown(),
+        check((value) => !Array.isArray(value)),
+        record(string(), unknown())
+      ),
+      unique_types: array(unknown()),
+      struct_instantiations: array(unknown()),
+      alias_instantiations: array(unknown()),
+      declarations: array(unknown()),
+      incoming_messages: array(unknown()),
+      incoming_external: array(unknown()),
+      outgoing_messages: array(unknown()),
+      emitted_events: array(unknown()),
+      get_methods: array(unknown()),
+      thrown_errors: array(unknown())
+    });
+    CommonPayloadEntries = {
+      targetAddress: string(),
+      sourceAddress: string(),
+      messageValue: string(),
+      messageTransport: picklist(["internal", "external"]),
+      bounce: boolean(),
+      mcSeqnoInput: string(),
+      rawMessage: string()
+    };
+    EmulateNavigationPayloadSchema = variant("inputMode", [
+      object({ inputMode: literal("raw"), ...CommonPayloadEntries }),
+      object({
+        inputMode: literal("builder"),
+        ...CommonPayloadEntries,
+        builder: pipe(
+          object({
+            abi: optional(
+              custom((value) => is(ContractAbiEnvelopeSchema, value)),
+              () => void 0
+            ),
+            abiSourceMode: picklist(["auto", "manual"]),
+            abiEndpoint: picklist(["destination", "source"]),
+            messageName: string(),
+            argsJson: pipe(string(), check(isJson))
+          }),
+          check((builder) => builder.abiSourceMode !== "manual" || builder.abi !== void 0)
+        )
+      })
+    ]);
+    NavigationStateSchema = object({ emulatePayload: EmulateNavigationPayloadSchema });
     __name(isJson, "isJson");
-    __name(isRecord2, "isRecord");
   }
 });
 
 // ../../explorer-core/src/pages/emulateSharing.ts
 function parseSharedEmulation(value) {
-  if (!isRecord3(value) || value.version !== SHARED_EMULATION_VERSION || !isRecord3(value.options) || typeof value.options.ignoreChksig !== "boolean" || value.options.now !== void 0 && !isUint32(value.options.now)) {
-    return void 0;
-  }
-  const input = readEmulateNavigationPayload({ emulatePayload: value.input });
-  const mcSeqno = Number(input?.mcSeqnoInput);
-  if (!input?.rawMessage.trim() || !isUint32(mcSeqno) || input.mcSeqnoInput !== String(mcSeqno)) {
-    return void 0;
-  }
-  const accountStateOverrides = parseAccountStateOverrides(value.options.accountStateOverrides);
-  if (value.options.accountStateOverrides !== void 0 && !accountStateOverrides) {
-    return void 0;
-  }
-  return {
-    version: SHARED_EMULATION_VERSION,
-    input,
-    options: {
-      accountStateOverrides,
-      ignoreChksig: value.options.ignoreChksig,
-      now: value.options.now
-    }
-  };
+  const result = safeParse(SharedEmulationSchema, value);
+  return result.success ? result.output : void 0;
 }
-function parseAccountStateOverrides(value) {
-  if (value === void 0) {
-    return void 0;
-  }
-  if (!isRecord3(value)) {
-    return void 0;
-  }
-  const entries = Object.entries(value);
-  if (entries.length > MAX_SHARED_ACCOUNT_OVERRIDES) {
-    return void 0;
-  }
-  const result = /* @__PURE__ */ Object.create(null);
-  for (const [address, override] of entries) {
-    if (!address || !isRecord3(override)) {
-      return void 0;
-    }
-    const balance = optionalString(override.balance);
-    const lastTransactionLt = optionalString(override.lastTransactionLt);
-    const lastTransactionHash = optionalString(override.lastTransactionHash);
-    const state = parseAccountState(override.state);
-    if (balance === false || lastTransactionLt === false || lastTransactionHash === false || state === false) {
-      return void 0;
-    }
-    result[address] = {
-      balance: balance || void 0,
-      lastTransactionLt: lastTransactionLt || void 0,
-      lastTransactionHash: lastTransactionHash || void 0,
-      state: state || void 0
-    };
-  }
-  return result;
-}
-function parseAccountState(value) {
-  if (value === void 0) {
-    return void 0;
-  }
-  if (!isRecord3(value) || typeof value.type !== "string") {
-    return false;
-  }
-  if (value.type === "uninit") {
-    return { type: "uninit" };
-  }
-  if (value.type === "frozen") {
-    const stateHash = optionalString(value.stateHash);
-    return stateHash === false ? false : { type: "frozen", stateHash: stateHash || void 0 };
-  }
-  if (value.type === "active") {
-    const codeBoc = optionalString(value.codeBoc);
-    const dataBoc = optionalString(value.dataBoc);
-    return codeBoc === false || dataBoc === false ? false : { type: "active", codeBoc: codeBoc || void 0, dataBoc: dataBoc || void 0 };
-  }
-  return false;
-}
-function optionalString(value) {
-  return value === void 0 || typeof value === "string" ? value : false;
-}
-function isUint32(value) {
-  return Number.isSafeInteger(value) && Number(value) >= 0 && Number(value) <= MAX_UINT32;
-}
-function isRecord3(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
-var SHARED_EMULATION_VERSION, MAX_SHARED_ACCOUNT_OVERRIDES, MAX_UINT32;
+var SHARED_EMULATION_VERSION, MAX_SHARED_ACCOUNT_OVERRIDES, MAX_UINT32, Uint32Schema, OptionalStringSchema, AccountStateSchema, AccountOverridesSchema, SharedEmulationSchema, ShareResponseSchema, LoadedShareSchema, ErrorResponseSchema;
 var init_emulateSharing = __esm({
   "../../explorer-core/src/pages/emulateSharing.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
+    init_dist();
     init_emulateNavigationPayload();
     SHARED_EMULATION_VERSION = 1;
     MAX_SHARED_ACCOUNT_OVERRIDES = 64;
     MAX_UINT32 = 4294967295;
+    Uint32Schema = pipe(number(), integer(), minValue(0), maxValue(MAX_UINT32));
+    OptionalStringSchema = pipe(
+      optional(string(), () => void 0),
+      transform((value) => value || void 0)
+    );
+    AccountStateSchema = variant("type", [
+      object({ type: literal("uninit") }),
+      object({ type: literal("frozen"), stateHash: OptionalStringSchema }),
+      object({
+        type: literal("active"),
+        codeBoc: OptionalStringSchema,
+        dataBoc: OptionalStringSchema
+      })
+    ]);
+    AccountOverridesSchema = pipe(
+      unknown(),
+      check((value) => !Array.isArray(value)),
+      record(
+        pipe(string(), nonEmpty()),
+        object({
+          balance: OptionalStringSchema,
+          lastTransactionLt: OptionalStringSchema,
+          lastTransactionHash: OptionalStringSchema,
+          state: optional(AccountStateSchema, () => void 0)
+        })
+      ),
+      maxEntries(MAX_SHARED_ACCOUNT_OVERRIDES),
+      transform((overrides) => Object.assign(/* @__PURE__ */ Object.create(null), overrides))
+    );
+    SharedEmulationSchema = object({
+      version: literal(SHARED_EMULATION_VERSION),
+      input: pipe(
+        EmulateNavigationPayloadSchema,
+        check((input) => {
+          const mcSeqno = Number(input.mcSeqnoInput);
+          return input.rawMessage.trim().length > 0 && is(Uint32Schema, mcSeqno) && input.mcSeqnoInput === String(mcSeqno);
+        })
+      ),
+      options: object({
+        accountStateOverrides: optional(AccountOverridesSchema, () => void 0),
+        ignoreChksig: boolean(),
+        now: optional(Uint32Schema, () => void 0)
+      })
+    });
+    ShareResponseSchema = object({
+      id: pipe(string(), nonEmpty()),
+      expiresAt: pipe(number(), finite(), gtValue(0))
+    });
+    LoadedShareSchema = object({ emulation: SharedEmulationSchema });
+    ErrorResponseSchema = object({ error: string() });
     __name(parseSharedEmulation, "parseSharedEmulation");
-    __name(parseAccountStateOverrides, "parseAccountStateOverrides");
-    __name(parseAccountState, "parseAccountState");
-    __name(optionalString, "optionalString");
-    __name(isUint32, "isUint32");
-    __name(isRecord3, "isRecord");
   }
 });
 
@@ -878,18 +1534,18 @@ async function readEmulationShareResponse(context, now = Date.now()) {
   if (!id || !SHARE_ID_PATTERN.test(id)) {
     return jsonError2(404, "Emulation share not found");
   }
-  let object;
+  let object2;
   try {
-    object = await bucket.get(objectKey(id));
+    object2 = await bucket.get(objectKey(id));
   } catch {
     return jsonError2(503, "Failed to load emulation share");
   }
-  if (!object) {
+  if (!object2) {
     return jsonError2(404, "Emulation share not found");
   }
   let stored;
   try {
-    stored = parseStoredEmulationShare(JSON.parse(await object.text()));
+    stored = parseStoredEmulationShare(JSON.parse(await object2.text()));
   } catch {
     stored = void 0;
   }
@@ -908,11 +1564,8 @@ async function readEmulationShareResponse(context, now = Date.now()) {
   return jsonResponse({ emulation: stored.emulation, expiresAt: stored.expiresAt });
 }
 function parseStoredEmulationShare(value) {
-  if (!isRecord4(value) || !isTimestamp(value.expiresAt)) {
-    return void 0;
-  }
-  const emulation = parseSharedEmulation(value.emulation);
-  return emulation ? { expiresAt: value.expiresAt, emulation } : void 0;
+  const result = safeParse(StoredEmulationShareSchema, value);
+  return result.success ? result.output : void 0;
 }
 function objectKey(id) {
   return `${OBJECT_PREFIX}${id}.json`;
@@ -927,30 +1580,27 @@ function jsonResponse(payload, status = 200, headers) {
   responseHeaders.set("x-content-type-options", "nosniff");
   return new Response(JSON.stringify(payload), { status, headers: responseHeaders });
 }
-function isTimestamp(value) {
-  return typeof value === "number" && Number.isFinite(value) && value > 0;
-}
-function isRecord4(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
-var EMULATION_SHARE_TTL_MS, MAX_REQUEST_BYTES, SHARE_ID_PATTERN, OBJECT_PREFIX;
+var EMULATION_SHARE_TTL_MS, MAX_REQUEST_BYTES, SHARE_ID_PATTERN, OBJECT_PREFIX, StoredEmulationShareSchema;
 var init_emulationShares = __esm({
   "../worker/emulationShares.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_emulateSharing();
+    init_dist();
     EMULATION_SHARE_TTL_MS = 30 * 24 * 60 * 60 * 1e3;
     MAX_REQUEST_BYTES = 1024 * 1024;
     SHARE_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     OBJECT_PREFIX = "emulations/";
     __name(createEmulationShareResponse, "createEmulationShareResponse");
     __name(readEmulationShareResponse, "readEmulationShareResponse");
+    StoredEmulationShareSchema = object({
+      expiresAt: pipe(number(), finite(), gtValue(0)),
+      emulation: SharedEmulationSchema
+    });
     __name(parseStoredEmulationShare, "parseStoredEmulationShare");
     __name(objectKey, "objectKey");
     __name(jsonError2, "jsonError");
     __name(jsonResponse, "jsonResponse");
-    __name(isTimestamp, "isTimestamp");
-    __name(isRecord4, "isRecord");
   }
 });
 
@@ -961,7 +1611,7 @@ function onRequest6(context) {
 var init_id = __esm({
   "api/emulations/[id].ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_emulationShares();
     __name(onRequest6, "onRequest");
   }
@@ -974,7 +1624,7 @@ function onRequest7(context) {
 var init_emulations = __esm({
   "api/emulations/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_emulationShares();
     __name(onRequest7, "onRequest");
   }
@@ -1380,7 +2030,7 @@ function parseGlyph(glyph, data, start) {
         }
       }
     }
-    check.argument(flags2.length === numberOfCoordinates, "Bad flags.");
+    check2.argument(flags2.length === numberOfCoordinates, "Bad flags.");
     if (endPointIndices.length > 0) {
       var points = [];
       var point;
@@ -1467,13 +2117,13 @@ function parseGlyph(glyph, data, start) {
     }
   }
 }
-function transformPoints(points, transform) {
+function transformPoints(points, transform2) {
   var newPoints = [];
   for (var i2 = 0; i2 < points.length; i2 += 1) {
     var pt = points[i2];
     var newPt = {
-      x: transform.xScale * pt.x + transform.scale01 * pt.y + transform.dx,
-      y: transform.scale10 * pt.x + transform.yScale * pt.y + transform.dy,
+      x: transform2.xScale * pt.x + transform2.scale01 * pt.y + transform2.dx,
+      y: transform2.scale10 * pt.x + transform2.yScale * pt.y + transform2.dy,
       onCurve: pt.onCurve,
       lastPointOfContour: pt.lastPointOfContour
     };
@@ -1492,7 +2142,7 @@ function getContours(points) {
       currentContour = [];
     }
   }
-  check.argument(currentContour.length === 0, "There are still points left in the current contour.");
+  check2.argument(currentContour.length === 0, "There are still points left in the current contour.");
   return contours;
 }
 function getPath(points) {
@@ -1554,7 +2204,7 @@ function buildPath(glyphs, glyph) {
           }
           var firstPt = glyph.points[component.matchedPoints[0]];
           var secondPt = componentGlyph.points[component.matchedPoints[1]];
-          var transform = {
+          var transform2 = {
             xScale: component.xScale,
             scale01: component.scale01,
             scale10: component.scale10,
@@ -1562,10 +2212,10 @@ function buildPath(glyphs, glyph) {
             dx: 0,
             dy: 0
           };
-          secondPt = transformPoints([secondPt], transform)[0];
-          transform.dx = firstPt.x - secondPt.x;
-          transform.dy = firstPt.y - secondPt.y;
-          transformedPoints = transformPoints(componentGlyph.points, transform);
+          secondPt = transformPoints([secondPt], transform2)[0];
+          transform2.dx = firstPt.x - secondPt.x;
+          transform2.dy = firstPt.y - secondPt.y;
+          transformedPoints = transformPoints(componentGlyph.points, transform2);
         }
         glyph.points = glyph.points.concat(transformedPoints);
       }
@@ -3488,11 +4138,11 @@ function Bidi(baseDir) {
   this.featuresTags = {};
 }
 function registerContextChecker(checkId) {
-  var check2 = this.contextChecks[checkId + "Check"];
+  var check22 = this.contextChecks[checkId + "Check"];
   return this.tokenizer.registerContextChecker(
     checkId,
-    check2.startCheck,
-    check2.endCheck
+    check22.startCheck,
+    check22.endCheck
   );
 }
 function tokenizeText() {
@@ -3685,7 +4335,7 @@ function parseCmapTableFormat4(cmap2, p, data, start, offset) {
 function parseCmapTable(data, start) {
   var cmap2 = {};
   cmap2.version = parse.getUShort(data, start);
-  check.argument(cmap2.version === 0, "cmap table version should be 0.");
+  check2.argument(cmap2.version === 0, "cmap table version should be 0.");
   cmap2.numTables = parse.getUShort(data, start + 2);
   var offset = -1;
   for (var i2 = cmap2.numTables - 1; i2 >= 0; i2 -= 1) {
@@ -4651,7 +5301,7 @@ function parseFvarInstance(data, start, axes, names) {
 function parseFvarTable(data, start, names) {
   var p = new parse.Parser(data, start);
   var tableVersion = p.parseULong();
-  check.argument(
+  check2.argument(
     tableVersion === 65536,
     "Unsupported fvar table version."
   );
@@ -4685,7 +5335,7 @@ function parseGDEFTable(data, start) {
   start = start || 0;
   var p = new Parser(data, start);
   var tableVersion = p.parseVersion(1);
-  check.argument(
+  check2.argument(
     tableVersion === 1 || tableVersion === 1.2 || tableVersion === 1.3,
     "Unsupported GDEF table version."
   );
@@ -4705,7 +5355,7 @@ function parseGposTable(data, start) {
   start = start || 0;
   var p = new Parser(data, start);
   var tableVersion = p.parseVersion(1);
-  check.argument(
+  check2.argument(
     tableVersion === 1 || tableVersion === 1.1,
     "Unsupported GPOS table version " + tableVersion
   );
@@ -4730,7 +5380,7 @@ function parseGsubTable(data, start) {
   start = start || 0;
   var p = new Parser(data, start);
   var tableVersion = p.parseVersion(1);
-  check.argument(
+  check2.argument(
     tableVersion === 1 || tableVersion === 1.1,
     "Unsupported GSUB table version."
   );
@@ -4758,7 +5408,7 @@ function parseHeadTable(data, start) {
   head2.fontRevision = Math.round(p.parseFixed() * 1e3) / 1e3;
   head2.checkSumAdjustment = p.parseULong();
   head2.magicNumber = p.parseULong();
-  check.argument(
+  check2.argument(
     head2.magicNumber === 1594834165,
     "Font header has wrong magic number."
   );
@@ -4837,7 +5487,7 @@ function parseWindowsKernTable(p) {
   var pairs = {};
   p.skip("uShort");
   var subtableVersion = p.parseUShort();
-  check.argument(subtableVersion === 0, "Unsupported kern sub-table version.");
+  check2.argument(subtableVersion === 0, "Unsupported kern sub-table version.");
   p.skip("uShort", 2);
   var nPairs = p.parseUShort();
   p.skip("uShort", 3);
@@ -4886,7 +5536,7 @@ function parseKernTable(data, start) {
 function parseLtagTable(data, start) {
   var p = new parse.Parser(data, start);
   var tableVersion = p.parseULong();
-  check.argument(tableVersion === 1, "Unsupported ltag table version.");
+  check2.argument(tableVersion === 1, "Unsupported ltag table version.");
   p.skip("uLong", 1);
   var numTags = p.parseULong();
   var tags = [];
@@ -5026,7 +5676,7 @@ function parsePostTable(data, start) {
 function parseMetaTable(data, start) {
   var p = new parse.Parser(data, start);
   var tableVersion = p.parseULong();
-  check.argument(tableVersion === 1, "Unsupported META table version.");
+  check2.argument(tableVersion === 1, "Unsupported META table version.");
   p.parseULong();
   p.parseULong();
   var numDataMaps = p.parseULong();
@@ -6264,7 +6914,7 @@ function ns(e, t) {
       return n;
   return "unknown";
 }
-function is(e) {
+function is2(e) {
   if (e)
     return Pr.find((t) => t.toLowerCase() === e.toLowerCase() || t.toLowerCase().startsWith(e.toLowerCase()));
 }
@@ -6288,7 +6938,7 @@ async function* Tt(e, t) {
   let { type: h, props: p } = e;
   if (p && Io(p))
     throw new Error("dangerouslySetInnerHTML property is not supported. See documentation for more information https://github.com/vercel/satori#jsx.");
-  let { style: v, children: _, tw: b, lang: y = u } = p || {}, S = is(y);
+  let { style: v, children: _, tw: b, lang: y = u } = p || {}, S = is2(y);
   if (b) {
     let N = g(b, v);
     v = Object.assign(N, v);
@@ -7180,10 +7830,10 @@ async function init(input) {
   const { instance, module } = await load2(await input, imports);
   return finalizeInit(instance, module);
 }
-var __create2, __defProp2, __getOwnPropDesc2, __getOwnPropNames2, __getProtoOf2, __hasOwnProp2, __commonJS2, __export, __copyProps2, __toESM2, require_tiny_inflate, require_swap, require_unicode_trie, require_b64, require_parse, require_walk, require_stringify, require_unit, require_lib, require_camelize, require_colors, require_css_color_keywords, require_css_to_react_native, require_css_background_parser, require_css_box_shadow, U200D, UFE0Fg, apis, languageFontMap, assetCache, loadDynamicAsset, import_unicode_trie, import_base64_js, $557adaaeb0c7885f$exports, $1627905f8be2ef3f$export$fb4028874a74450, $1627905f8be2ef3f$export$1bb1140fe1358b00, $1627905f8be2ef3f$export$f3e416a182673355, $1627905f8be2ef3f$export$24aa617c849a894a, $1627905f8be2ef3f$export$a73c4d14459b698d, $1627905f8be2ef3f$export$9e5d732f3676a9ba, $1627905f8be2ef3f$export$1dff41d5c0caca01, $1627905f8be2ef3f$export$30a74a373318dec6, $1627905f8be2ef3f$export$d710c5f50fc7496a, $1627905f8be2ef3f$export$66498d28055820a9, $1627905f8be2ef3f$export$eb6c6d0b7c8826f2, $1627905f8be2ef3f$export$de92be486109a1df, $1627905f8be2ef3f$export$606cfc2a8896c91f, $1627905f8be2ef3f$export$e51d3c675bb0140d, $1627905f8be2ef3f$export$da51c6332ad11d7b, $1627905f8be2ef3f$export$bea437c40441867d, $1627905f8be2ef3f$export$c4c7eecbfed13dc9, $1627905f8be2ef3f$export$98e1f8a379849661, $32627af916ac1b00$export$98f50d781a474745, $32627af916ac1b00$export$12ee1f8f5315ca7e, $32627af916ac1b00$export$e4965ce242860454, $32627af916ac1b00$export$8f14048969dcd45e, $32627af916ac1b00$export$133eb141bf58aff4, $32627af916ac1b00$export$5bdb8ccbf5c57afc, $557adaaeb0c7885f$var$data, $557adaaeb0c7885f$var$classTrie, $557adaaeb0c7885f$var$mapClass, $557adaaeb0c7885f$var$mapFirst, $557adaaeb0c7885f$var$Break, $557adaaeb0c7885f$var$LineBreaker, import_css_to_react_native, import_css_background_parser, import_css_box_shadow, import_postcss_value_parser, emoji_regex_default, u8, u16, u32, fleb, fdeb, clim, freb, _a, fl, revfl, _b, fd, rev, x, i, hMap, flt, i, i, i, i, fdt, i, flrm, fdrm, max, bits, bits16, shft, slc, ec, err, inflt, et, td, tds, cffStandardStrings, cffStandardEncoding, cffExpertEncoding, check, glyphset, typeOffsets, langSysTable, parse, glyf, instructionTable, exec, execGlyph, execComponent, roundSuper, xUnitVector, yUnitVector, HPZero, defaultState, arabicWordCheck, arabicSentenceCheck, SUBSTITUTIONS, latinWordCheck, cmap, TOP_DICT_META, PRIVATE_DICT_META, cff, fvar, attachList, caretValue, ligGlyph, ligCaretList, markGlyphSets, gdef, subtableParsers, gpos, subtableParsers$1, lookupRecordDesc, gsub, head, hhea, hmtx, kern, ltag, loca, maxp, os2, post, decode, eightBitMacEncodings, meta, opentype, opentype_module_default, Gu, mr, ju, Hu, Vu, Yu, gr, C, Zr, _o, Xu, vr, c, So, ko, On, ss, as, An, Ar, zl, Ir, ls, fs, cs, ps, hs, ms, Mn, bs, xs, _s, At, De, le, Nr, qn, Un, Mr, jn, Vn, Xn, $r, Jn, ei, ri, Hs, ui, fi, di, hi, Zs, mi, na, ca, pa, ha, ba, ya, _a2, Sa, Ta, Li, Di, La, Da, Na, za, Ka, Ja, nu, iu, p0, ou, lu, cu, pu, mu, ot, gt, vt, Ju, Zu, el, tl, rl, nl, To, Oo, Eo, Po, ol, al, rn, nn, Lo, Do, fl2, we, $o, cl, vl, bl, qo, kl, Tl, xr, wr, _r, cn, Uo, fn, Ol, Yo, gn, Jo, vn, Er, Ml, _n, kt, Pr, os, Ot, $u, O0, E0, gu, j, Ji, P0, me, R0, ro, ir, Vr, C0, D0, dt, W0, U0, Yr, po, Nn, He, Sn, Fn, Un2, Ln, Dn, Tt2, Wn, mt, Pt, wt2, je, Hn, Me, resvg_wasm_exports, wasm, heap, heap_next, WASM_VECTOR_LEN, cachedUint8Memory0, cachedTextEncoder, encodeString, cachedInt32Memory0, cachedTextDecoder, BBox, RenderedImage, Resvg, dist_default, initialized, initWasm, Resvg2, initializedResvg, initializedYoga, _a3, _b2, isDev, ImageResponse;
+var __create2, __defProp2, __getOwnPropDesc2, __getOwnPropNames2, __getProtoOf2, __hasOwnProp2, __commonJS2, __export, __copyProps2, __toESM2, require_tiny_inflate, require_swap, require_unicode_trie, require_b64, require_parse, require_walk, require_stringify, require_unit, require_lib, require_camelize, require_colors, require_css_color_keywords, require_css_to_react_native, require_css_background_parser, require_css_box_shadow, U200D, UFE0Fg, apis, languageFontMap, assetCache, loadDynamicAsset, import_unicode_trie, import_base64_js, $557adaaeb0c7885f$exports, $1627905f8be2ef3f$export$fb4028874a74450, $1627905f8be2ef3f$export$1bb1140fe1358b00, $1627905f8be2ef3f$export$f3e416a182673355, $1627905f8be2ef3f$export$24aa617c849a894a, $1627905f8be2ef3f$export$a73c4d14459b698d, $1627905f8be2ef3f$export$9e5d732f3676a9ba, $1627905f8be2ef3f$export$1dff41d5c0caca01, $1627905f8be2ef3f$export$30a74a373318dec6, $1627905f8be2ef3f$export$d710c5f50fc7496a, $1627905f8be2ef3f$export$66498d28055820a9, $1627905f8be2ef3f$export$eb6c6d0b7c8826f2, $1627905f8be2ef3f$export$de92be486109a1df, $1627905f8be2ef3f$export$606cfc2a8896c91f, $1627905f8be2ef3f$export$e51d3c675bb0140d, $1627905f8be2ef3f$export$da51c6332ad11d7b, $1627905f8be2ef3f$export$bea437c40441867d, $1627905f8be2ef3f$export$c4c7eecbfed13dc9, $1627905f8be2ef3f$export$98e1f8a379849661, $32627af916ac1b00$export$98f50d781a474745, $32627af916ac1b00$export$12ee1f8f5315ca7e, $32627af916ac1b00$export$e4965ce242860454, $32627af916ac1b00$export$8f14048969dcd45e, $32627af916ac1b00$export$133eb141bf58aff4, $32627af916ac1b00$export$5bdb8ccbf5c57afc, $557adaaeb0c7885f$var$data, $557adaaeb0c7885f$var$classTrie, $557adaaeb0c7885f$var$mapClass, $557adaaeb0c7885f$var$mapFirst, $557adaaeb0c7885f$var$Break, $557adaaeb0c7885f$var$LineBreaker, import_css_to_react_native, import_css_background_parser, import_css_box_shadow, import_postcss_value_parser, emoji_regex_default, u8, u16, u32, fleb, fdeb, clim, freb, _a, fl, revfl, _b, fd, rev, x, i, hMap, flt, i, i, i, i, fdt, i, flrm, fdrm, max, bits, bits16, shft, slc, ec, err, inflt, et, td, tds, cffStandardStrings, cffStandardEncoding, cffExpertEncoding, check2, glyphset, typeOffsets, langSysTable, parse, glyf, instructionTable, exec, execGlyph, execComponent, roundSuper, xUnitVector, yUnitVector, HPZero, defaultState, arabicWordCheck, arabicSentenceCheck, SUBSTITUTIONS, latinWordCheck, cmap, TOP_DICT_META, PRIVATE_DICT_META, cff, fvar, attachList, caretValue, ligGlyph, ligCaretList, markGlyphSets, gdef, subtableParsers, gpos, subtableParsers$1, lookupRecordDesc, gsub, head, hhea, hmtx, kern, ltag, loca, maxp, os2, post, decode, eightBitMacEncodings, meta, opentype, opentype_module_default, Gu, mr, ju, Hu, Vu, Yu, gr, C, Zr, _o, Xu, vr, c, So, ko, On, ss, as, An, Ar, zl, Ir, ls, fs, cs, ps, hs, ms, Mn, bs, xs, _s, At, De, le, Nr, qn, Un, Mr, jn, Vn, Xn, $r, Jn, ei, ri, Hs, ui, fi, di, hi, Zs, mi, na, ca, pa, ha, ba, ya, _a2, Sa, Ta, Li, Di, La, Da, Na, za, Ka, Ja, nu, iu, p0, ou, lu, cu, pu, mu, ot, gt, vt, Ju, Zu, el, tl, rl, nl, To, Oo, Eo, Po, ol, al, rn, nn, Lo, Do, fl2, we, $o, cl, vl, bl, qo, kl, Tl, xr, wr, _r, cn, Uo, fn, Ol, Yo, gn, Jo, vn, Er, Ml, _n, kt, Pr, os, Ot, $u, O0, E0, gu, j, Ji, P0, me, R0, ro, ir, Vr, C0, D0, dt, W0, U0, Yr, po, Nn, He, Sn, Fn, Un2, Ln, Dn, Tt2, Wn, mt, Pt, wt2, je, Hn, Me, resvg_wasm_exports, wasm, heap, heap_next, WASM_VECTOR_LEN, cachedUint8Memory0, cachedTextEncoder, encodeString, cachedInt32Memory0, cachedTextDecoder, BBox, RenderedImage, Resvg, dist_default, initialized, initWasm, Resvg2, initializedResvg, initializedYoga, _a3, _b2, isDev, ImageResponse;
 var init_api = __esm({
   "../../../node_modules/.bun/@cloudflare+pages-plugin-vercel-og@0.1.2/node_modules/@cloudflare/pages-plugin-vercel-og/dist/src/api/index.js"() {
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     __create2 = Object.create;
     __defProp2 = Object.defineProperty;
     __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -7487,16 +8137,16 @@ var init_api = __esm({
           b[n] = b[m2];
           b[m2] = i2;
         }, "swap");
-        var swap32 = /* @__PURE__ */ __name((array) => {
-          const len = array.length;
+        var swap32 = /* @__PURE__ */ __name((array2) => {
+          const len = array2.length;
           for (let i2 = 0; i2 < len; i2 += 4) {
-            swap(array, i2, i2 + 3);
-            swap(array, i2 + 1, i2 + 2);
+            swap(array2, i2, i2 + 3);
+            swap(array2, i2 + 1, i2 + 2);
           }
         }, "swap32");
-        var swap32LE = /* @__PURE__ */ __name((array) => {
+        var swap32LE = /* @__PURE__ */ __name((array2) => {
           if (isBigEndian) {
-            swap32(array);
+            swap32(array2);
           }
         }, "swap32LE");
         module.exports = {
@@ -7943,12 +8593,12 @@ var init_api = __esm({
     });
     require_stringify = __commonJS2({
       "../../node_modules/postcss-value-parser/lib/stringify.js"(exports2, module) {
-        function stringifyNode(node, custom) {
+        function stringifyNode(node, custom2) {
           var type = node.type;
           var value = node.value;
           var buf;
           var customResult;
-          if (custom && (customResult = custom(node)) !== void 0) {
+          if (custom2 && (customResult = custom2(node)) !== void 0) {
             return customResult;
           } else if (type === "word" || type === "space") {
             return value;
@@ -7960,7 +8610,7 @@ var init_api = __esm({
           } else if (type === "div") {
             return (node.before || "") + value + (node.after || "");
           } else if (Array.isArray(node.nodes)) {
-            buf = stringify(node.nodes, custom);
+            buf = stringify(node.nodes, custom2);
             if (type !== "function") {
               return buf;
             }
@@ -7969,16 +8619,16 @@ var init_api = __esm({
           return value;
         }
         __name(stringifyNode, "stringifyNode");
-        function stringify(nodes, custom) {
+        function stringify(nodes, custom2) {
           var result, i2;
           if (Array.isArray(nodes)) {
             result = "";
             for (i2 = nodes.length - 1; ~i2; i2 -= 1) {
-              result = stringifyNode(nodes[i2], custom) + result;
+              result = stringifyNode(nodes[i2], custom2) + result;
             }
             return result;
           }
-          return stringifyNode(nodes, custom);
+          return stringifyNode(nodes, custom2);
         }
         __name(stringify, "stringify");
         module.exports = stringify;
@@ -8377,9 +9027,9 @@ var init_api = __esm({
             return node.type === type ? node.value : null;
           };
         }, "valueForTypeToken2");
-        var regExpToken = /* @__PURE__ */ __name(function regExpToken2(regExp, transform2) {
-          if (transform2 === void 0) {
-            transform2 = String;
+        var regExpToken = /* @__PURE__ */ __name(function regExpToken2(regExp, transform22) {
+          if (transform22 === void 0) {
+            transform22 = String;
           }
           return function(node) {
             if (node.type !== "word")
@@ -8387,7 +9037,7 @@ var init_api = __esm({
             var match2 = node.value.match(regExp);
             if (match2 === null)
               return null;
-            var value = transform2(match2[1]);
+            var value = transform22(match2[1]);
             return value;
           };
         }, "regExpToken2");
@@ -8842,7 +9492,7 @@ var init_api = __esm({
           skewY: singleAngle,
           skew: xyAngle("skew", "0deg")
         };
-        var transform = /* @__PURE__ */ __name(function transform2(tokenStream) {
+        var transform2 = /* @__PURE__ */ __name(function transform22(tokenStream) {
           var transforms2 = [];
           var didParseFirst = false;
           while (tokenStream.hasTokens()) {
@@ -8926,7 +9576,7 @@ var init_api = __esm({
           textShadowOffset,
           textDecoration,
           textDecorationLine,
-          transform
+          transform: transform2
         };
         var propertiesWithoutUnits;
         if (false) {
@@ -10651,8 +11301,8 @@ var init_api = __esm({
         }
         return null;
       }
-      constructor(string) {
-        this.string = string;
+      constructor(string2) {
+        this.string = string2;
         this.pos = 0;
         this.lastPos = 0;
         this.curClass = null;
@@ -12072,7 +12722,7 @@ var init_api = __esm({
     __name(addGlyphNames, "addGlyphNames");
     __name(fail, "fail");
     __name(argument, "argument");
-    check = { fail, argument, assert: argument };
+    check2 = { fail, argument, assert: argument };
     __name(getPathDefinition, "getPathDefinition");
     __name(Glyph, "Glyph");
     Glyph.prototype.bindConstructorValues = function(options) {
@@ -12175,7 +12825,7 @@ var init_api = __esm({
           currentContour = [];
         }
       }
-      check.argument(
+      check2.argument(
         currentContour.length === 0,
         "There are still points left in the current contour."
       );
@@ -12402,7 +13052,7 @@ var init_api = __esm({
           }
           if (create) {
             var index = allFeatures.length;
-            check.assert(
+            check2.assert(
               index === 0 || feature >= allFeatures[index - 1].tag,
               "Features must be added in alphabetical order."
             );
@@ -12682,7 +13332,7 @@ var init_api = __esm({
         coverage: { format: 1, glyphs: [] },
         substitute: []
       });
-      check.assert(
+      check2.assert(
         subtable.coverage.format === 1,
         "Single: unable to modify coverage table format " + subtable.coverage.format
       );
@@ -12696,7 +13346,7 @@ var init_api = __esm({
       subtable.substitute[pos] = substitution.by;
     };
     Substitution.prototype.addMultiple = function(feature, substitution, script, language) {
-      check.assert(
+      check2.assert(
         substitution.by instanceof Array && substitution.by.length > 1,
         'Multiple: "by" must be an array of two or more ids'
       );
@@ -12713,7 +13363,7 @@ var init_api = __esm({
         coverage: { format: 1, glyphs: [] },
         sequences: []
       });
-      check.assert(
+      check2.assert(
         subtable.coverage.format === 1,
         "Multiple: unable to modify coverage table format " + subtable.coverage.format
       );
@@ -12740,7 +13390,7 @@ var init_api = __esm({
         coverage: { format: 1, glyphs: [] },
         alternateSets: []
       });
-      check.assert(
+      check2.assert(
         subtable.coverage.format === 1,
         "Alternate: unable to modify coverage table format " + subtable.coverage.format
       );
@@ -12771,7 +13421,7 @@ var init_api = __esm({
         };
         lookupTable.subtables[0] = subtable;
       }
-      check.assert(
+      check2.assert(
         subtable.coverage.format === 1,
         "Ligature: unable to modify coverage table format " + subtable.coverage.format
       );
@@ -12905,12 +13555,12 @@ var init_api = __esm({
     Parser.prototype.parseString = function(length) {
       var dataView = this.data;
       var offset = this.offset + this.relativeOffset;
-      var string = "";
+      var string2 = "";
       this.relativeOffset += length;
       for (var i2 = 0; i2 < length; i2++) {
-        string += String.fromCharCode(dataView.getUint8(offset + i2));
+        string2 += String.fromCharCode(dataView.getUint8(offset + i2));
       }
-      return string;
+      return string2;
     };
     Parser.prototype.parseTag = function() {
       return this.parseString(4);
@@ -13259,7 +13909,7 @@ var init_api = __esm({
     Parser.prototype.parseLookupList = function(lookupTableParsers) {
       return this.parsePointer(Parser.list(Parser.pointer(function() {
         var lookupType = this.parseUShort();
-        check.argument(1 <= lookupType && lookupType <= 9, "GPOS/GSUB lookup type " + lookupType + " unknown.");
+        check2.argument(1 <= lookupType && lookupType <= 9, "GPOS/GSUB lookup type " + lookupType + " unknown.");
         var lookupFlag = this.parseUShort();
         var useMarkFilteringSet = lookupFlag & 16;
         return {
@@ -13274,7 +13924,7 @@ var init_api = __esm({
       return this.parsePointer32(function() {
         var majorVersion = this.parseUShort();
         var minorVersion = this.parseUShort();
-        check.argument(majorVersion === 1 && minorVersion < 1, "GPOS/GSUB feature variations table unknown.");
+        check2.argument(majorVersion === 1 && minorVersion < 1, "GPOS/GSUB feature variations table unknown.");
         var featureVariations = this.parseRecordList32({
           conditionSetOffset: Parser.offset32,
           featureTableSubstitutionOffset: Parser.offset32
@@ -15345,7 +15995,7 @@ var init_api = __esm({
     }, "attachList");
     caretValue = /* @__PURE__ */ __name(function() {
       var format = this.parseUShort();
-      check.argument(
+      check2.argument(
         format === 1 || format === 2 || format === 3,
         "Unsupported CaretValue table version."
       );
@@ -15389,7 +16039,7 @@ var init_api = __esm({
           values: this.parseValueRecordList()
         };
       }
-      check.assert(
+      check2.assert(
         false,
         "0x" + start.toString(16) + ": GPOS lookup type 1 format must be 1 or 2."
       );
@@ -15397,7 +16047,7 @@ var init_api = __esm({
     subtableParsers[2] = /* @__PURE__ */ __name(function parseLookup2() {
       var start = this.offset + this.relativeOffset;
       var posFormat = this.parseUShort();
-      check.assert(
+      check2.assert(
         posFormat === 1 || posFormat === 2,
         "0x" + start.toString(16) + ": GPOS lookup type 2 format must be 1 or 2."
       );
@@ -15490,14 +16140,14 @@ var init_api = __esm({
           substitute: this.parseOffset16List()
         };
       }
-      check.assert(
+      check2.assert(
         false,
         "0x" + start.toString(16) + ": lookup type 1 format must be 1 or 2."
       );
     }, "parseLookup12");
     subtableParsers$1[2] = /* @__PURE__ */ __name(function parseLookup22() {
       var substFormat = this.parseUShort();
-      check.argument(
+      check2.argument(
         substFormat === 1,
         "GSUB Multiple Substitution Subtable identifier-format must be 1"
       );
@@ -15509,7 +16159,7 @@ var init_api = __esm({
     }, "parseLookup22");
     subtableParsers$1[3] = /* @__PURE__ */ __name(function parseLookup32() {
       var substFormat = this.parseUShort();
-      check.argument(
+      check2.argument(
         substFormat === 1,
         "GSUB Alternate Substitution Subtable identifier-format must be 1"
       );
@@ -15521,7 +16171,7 @@ var init_api = __esm({
     }, "parseLookup32");
     subtableParsers$1[4] = /* @__PURE__ */ __name(function parseLookup42() {
       var substFormat = this.parseUShort();
-      check.argument(
+      check2.argument(
         substFormat === 1,
         "GSUB ligature table identifier-format must be 1"
       );
@@ -15588,7 +16238,7 @@ var init_api = __esm({
           lookupRecords: this.parseRecordList(substCount, lookupRecordDesc)
         };
       }
-      check.assert(
+      check2.assert(
         false,
         "0x" + start.toString(16) + ": lookup type 5 format must be 1, 2 or 3."
       );
@@ -15634,14 +16284,14 @@ var init_api = __esm({
           lookupRecords: this.parseRecordList(lookupRecordDesc)
         };
       }
-      check.assert(
+      check2.assert(
         false,
         "0x" + start.toString(16) + ": lookup type 6 format must be 1, 2 or 3."
       );
     }, "parseLookup62");
     subtableParsers$1[7] = /* @__PURE__ */ __name(function parseLookup72() {
       var substFormat = this.parseUShort();
-      check.argument(
+      check2.argument(
         substFormat === 1,
         "GSUB Extension Substitution subtable identifier-format must be 1"
       );
@@ -15658,7 +16308,7 @@ var init_api = __esm({
     }, "parseLookup72");
     subtableParsers$1[8] = /* @__PURE__ */ __name(function parseLookup82() {
       var substFormat = this.parseUShort();
-      check.argument(
+      check2.argument(
         substFormat === 1,
         "GSUB Reverse Chaining Contextual Single Substitution Subtable identifier-format must be 1"
       );
@@ -19128,7 +19778,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     Pr = Object.keys({ ...kt, ..._n });
     __name(rs, "rs");
     __name(ns, "ns");
-    __name(is, "is");
+    __name(is2, "is");
     __name(Tt, "Tt");
     c();
     os = "unknown";
@@ -21347,7 +21997,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
 var require_react_production = __commonJS({
   "../../../node_modules/.bun/react@19.2.8/node_modules/react/cjs/react.production.js"(exports2) {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     var REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.transitional.element");
     var REACT_PORTAL_TYPE = /* @__PURE__ */ Symbol.for("react.portal");
     var REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for("react.fragment");
@@ -21434,8 +22084,8 @@ var require_react_production = __commonJS({
       return ReactElement(oldElement.type, newKey, oldElement.props);
     }
     __name(cloneAndReplaceKey, "cloneAndReplaceKey");
-    function isValidElement(object) {
-      return "object" === typeof object && null !== object && object.$$typeof === REACT_ELEMENT_TYPE;
+    function isValidElement(object2) {
+      return "object" === typeof object2 && null !== object2 && object2.$$typeof === REACT_ELEMENT_TYPE;
     }
     __name(isValidElement, "isValidElement");
     function escape(key) {
@@ -21474,7 +22124,7 @@ var require_react_production = __commonJS({
       throw thenable;
     }
     __name(resolveThenable, "resolveThenable");
-    function mapIntoArray(children, array, escapedPrefix, nameSoFar, callback) {
+    function mapIntoArray(children, array2, escapedPrefix, nameSoFar, callback) {
       var type = typeof children;
       if ("undefined" === type || "boolean" === type) children = null;
       var invokeCallback = false;
@@ -21495,7 +22145,7 @@ var require_react_production = __commonJS({
               case REACT_LAZY_TYPE:
                 return invokeCallback = children._init, mapIntoArray(
                   invokeCallback(children._payload),
-                  array,
+                  array2,
                   escapedPrefix,
                   nameSoFar,
                   callback
@@ -21503,7 +22153,7 @@ var require_react_production = __commonJS({
             }
         }
       if (invokeCallback)
-        return callback = callback(children), invokeCallback = "" === nameSoFar ? "." + getElementKey(children, 0) : nameSoFar, isArrayImpl(callback) ? (escapedPrefix = "", null != invokeCallback && (escapedPrefix = invokeCallback.replace(userProvidedKeyEscapeRegex, "$&/") + "/"), mapIntoArray(callback, array, escapedPrefix, "", function(c2) {
+        return callback = callback(children), invokeCallback = "" === nameSoFar ? "." + getElementKey(children, 0) : nameSoFar, isArrayImpl(callback) ? (escapedPrefix = "", null != invokeCallback && (escapedPrefix = invokeCallback.replace(userProvidedKeyEscapeRegex, "$&/") + "/"), mapIntoArray(callback, array2, escapedPrefix, "", function(c2) {
           return c2;
         })) : null != callback && (isValidElement(callback) && (callback = cloneAndReplaceKey(
           callback,
@@ -21511,14 +22161,14 @@ var require_react_production = __commonJS({
             userProvidedKeyEscapeRegex,
             "$&/"
           ) + "/") + invokeCallback
-        )), array.push(callback)), 1;
+        )), array2.push(callback)), 1;
       invokeCallback = 0;
       var nextNamePrefix = "" === nameSoFar ? "." : nameSoFar + ":";
       if (isArrayImpl(children))
         for (var i2 = 0; i2 < children.length; i2++)
           nameSoFar = children[i2], type = nextNamePrefix + getElementKey(nameSoFar, i2), invokeCallback += mapIntoArray(
             nameSoFar,
-            array,
+            array2,
             escapedPrefix,
             type,
             callback
@@ -21527,7 +22177,7 @@ var require_react_production = __commonJS({
         for (children = i2.call(children), i2 = 0; !(nameSoFar = children.next()).done; )
           nameSoFar = nameSoFar.value, type = nextNamePrefix + getElementKey(nameSoFar, i2++), invokeCallback += mapIntoArray(
             nameSoFar,
-            array,
+            array2,
             escapedPrefix,
             type,
             callback
@@ -21536,14 +22186,14 @@ var require_react_production = __commonJS({
         if ("function" === typeof children.then)
           return mapIntoArray(
             resolveThenable(children),
-            array,
+            array2,
             escapedPrefix,
             nameSoFar,
             callback
           );
-        array = String(children);
+        array2 = String(children);
         throw Error(
-          "Objects are not valid as a React child (found: " + ("[object Object]" === array ? "object with keys {" + Object.keys(children).join(", ") + "}" : array) + "). If you meant to render a collection of children, use an array instead."
+          "Objects are not valid as a React child (found: " + ("[object Object]" === array2 ? "object with keys {" + Object.keys(children).join(", ") + "}" : array2) + "). If you meant to render a collection of children, use an array instead."
         );
       }
       return invokeCallback;
@@ -21803,7 +22453,7 @@ var require_react_production = __commonJS({
 var require_react = __commonJS({
   "../../../node_modules/.bun/react@19.2.8/node_modules/react/index.js"(exports2, module) {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     if (true) {
       module.exports = require_react_production();
     } else {
@@ -21816,7 +22466,7 @@ var require_react = __commonJS({
 var init_cx = __esm({
   "../../ui/src/lib/cx.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -21846,7 +22496,7 @@ function normalizeEdgeLength(value, fallback) {
 var init_formatting = __esm({
   "../../ui/src/lib/formatting.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     __name(shortenMiddle, "shortenMiddle");
     __name(truncateEnd, "truncateEnd");
     __name(normalizeEdgeLength, "normalizeEdgeLength");
@@ -21857,7 +22507,7 @@ var init_formatting = __esm({
 var require_react_jsx_runtime_production = __commonJS({
   "../../../node_modules/.bun/react@19.2.8/node_modules/react/cjs/react-jsx-runtime.production.js"(exports2) {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     var REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.transitional.element");
     var REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for("react.fragment");
     function jsxProd(type, config, maybeKey) {
@@ -21889,7 +22539,7 @@ var require_react_jsx_runtime_production = __commonJS({
 var require_jsx_runtime = __commonJS({
   "../../../node_modules/.bun/react@19.2.8/node_modules/react/jsx-runtime.js"(exports2, module) {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     if (true) {
       module.exports = require_react_jsx_runtime_production();
     } else {
@@ -21909,7 +22559,7 @@ var import_jsx_runtime;
 var init_Tooltip2 = __esm({
   "../../ui/src/components/Tooltip/Tooltip.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Tooltip();
     import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
   }
@@ -21919,7 +22569,7 @@ var init_Tooltip2 = __esm({
 var init_Tooltip3 = __esm({
   "../../ui/src/components/Tooltip/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Tooltip2();
   }
 });
@@ -21950,7 +22600,7 @@ var import_jsx_runtime2, actionVariantClassNames, actionSizeClassNames, visibili
 var init_InlineActions2 = __esm({
   "../../ui/src/components/InlineActions/InlineActions.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_InlineActions();
     import_jsx_runtime2 = __toESM(require_jsx_runtime(), 1);
     actionVariantClassNames = {
@@ -21980,7 +22630,7 @@ var import_jsx_runtime3;
 var init_AddressChip2 = __esm({
   "../../ui/src/components/AddressChip/AddressChip.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_AddressChip();
     import_jsx_runtime3 = __toESM(require_jsx_runtime(), 1);
   }
@@ -21990,7 +22640,7 @@ var init_AddressChip2 = __esm({
 var init_AddressChip3 = __esm({
   "../../ui/src/components/AddressChip/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_AddressChip2();
   }
 });
@@ -22006,7 +22656,7 @@ var import_jsx_runtime4;
 var init_Banner2 = __esm({
   "../../ui/src/components/Banner/Banner.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Banner();
     import_jsx_runtime4 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22016,7 +22666,7 @@ var init_Banner2 = __esm({
 var init_Banner3 = __esm({
   "../../ui/src/components/Banner/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Banner2();
   }
 });
@@ -22025,7 +22675,7 @@ var init_Banner3 = __esm({
 var init_blockId = __esm({
   "../../ui/src/components/BlockChip/blockId.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -22040,7 +22690,7 @@ var import_jsx_runtime5;
 var init_BlockChip2 = __esm({
   "../../ui/src/components/BlockChip/BlockChip.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_BlockChip();
     import_jsx_runtime5 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22050,7 +22700,7 @@ var init_BlockChip2 = __esm({
 var init_BlockChip3 = __esm({
   "../../ui/src/components/BlockChip/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_BlockChip2();
     init_blockId();
   }
@@ -22078,7 +22728,7 @@ var import_jsx_runtime6, variantClassNames;
 var init_InlineButton2 = __esm({
   "../../ui/src/components/InlineButton/InlineButton.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_InlineButton();
     import_jsx_runtime6 = __toESM(require_jsx_runtime(), 1);
     variantClassNames = {
@@ -22094,7 +22744,7 @@ var init_InlineButton2 = __esm({
 var init_constants = __esm({
   "../../ui/src/components/InlineButton/constants.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -22102,7 +22752,7 @@ var init_constants = __esm({
 var init_InlineButton3 = __esm({
   "../../ui/src/components/InlineButton/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_InlineButton2();
     init_constants();
   }
@@ -22142,7 +22792,7 @@ var init_Input = __esm({
 var init_BocInput = __esm({
   "../../ui/src/components/BocInput/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -22157,7 +22807,7 @@ var import_jsx_runtime7;
 var init_BooleanValue2 = __esm({
   "../../ui/src/components/BooleanValue/BooleanValue.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_BooleanValue();
     import_jsx_runtime7 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22167,7 +22817,7 @@ var init_BooleanValue2 = __esm({
 var init_BooleanValue3 = __esm({
   "../../ui/src/components/BooleanValue/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_BooleanValue2();
   }
 });
@@ -22176,7 +22826,7 @@ var init_BooleanValue3 = __esm({
 var init_constants2 = __esm({
   "../../ui/src/components/InlineActions/constants.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -22184,7 +22834,7 @@ var init_constants2 = __esm({
 var init_InlineActions3 = __esm({
   "../../ui/src/components/InlineActions/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_InlineActions2();
     init_constants2();
   }
@@ -22194,7 +22844,7 @@ var init_InlineActions3 = __esm({
 var init_TokenAmount = __esm({
   "../../ui/src/components/TokenAmount/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -22203,7 +22853,7 @@ var import_jsx_runtime8;
 var init_NumberValue = __esm({
   "../../ui/src/components/NumberValue/NumberValue.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_jsx_runtime8 = __toESM(require_jsx_runtime(), 1);
   }
 });
@@ -22212,7 +22862,7 @@ var init_NumberValue = __esm({
 var init_NumberValue2 = __esm({
   "../../ui/src/components/NumberValue/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_NumberValue();
   }
 });
@@ -22228,7 +22878,7 @@ var import_jsx_runtime9, BYTE_BASE, BYTE_UNIT_MULTIPLIERS;
 var init_ByteSize2 = __esm({
   "../../ui/src/components/ByteSize/ByteSize.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_ByteSize();
     import_jsx_runtime9 = __toESM(require_jsx_runtime(), 1);
     BYTE_BASE = 1024;
@@ -22246,7 +22896,7 @@ var init_ByteSize2 = __esm({
 var init_ByteSize3 = __esm({
   "../../ui/src/components/ByteSize/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_ByteSize2();
   }
 });
@@ -22280,7 +22930,7 @@ var import_jsx_runtime10, variantClassNames2, sizeClassNames;
 var init_Button2 = __esm({
   "../../ui/src/components/Button/Button.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Button();
     import_jsx_runtime10 = __toESM(require_jsx_runtime(), 1);
     variantClassNames2 = {
@@ -22303,7 +22953,7 @@ var init_Button2 = __esm({
 var init_constants3 = __esm({
   "../../ui/src/components/Button/constants.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -22311,7 +22961,7 @@ var init_constants3 = __esm({
 var init_Button3 = __esm({
   "../../ui/src/components/Button/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Button2();
     init_constants3();
   }
@@ -22340,7 +22990,7 @@ var import_jsx_runtime11, shapeClassNames, radiusClassNames;
 var init_Skeleton2 = __esm({
   "../../ui/src/components/Skeleton/Skeleton.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Skeleton();
     import_jsx_runtime11 = __toESM(require_jsx_runtime(), 1);
     shapeClassNames = {
@@ -22360,7 +23010,7 @@ var init_Skeleton2 = __esm({
 var init_Skeleton3 = __esm({
   "../../ui/src/components/Skeleton/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Skeleton2();
   }
 });
@@ -22376,7 +23026,7 @@ var import_jsx_runtime12;
 var init_Breadcrumbs2 = __esm({
   "../../ui/src/components/Breadcrumbs/Breadcrumbs.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Breadcrumbs();
     import_jsx_runtime12 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22386,7 +23036,7 @@ var init_Breadcrumbs2 = __esm({
 var init_Breadcrumbs3 = __esm({
   "../../ui/src/components/Breadcrumbs/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Breadcrumbs2();
   }
 });
@@ -22402,7 +23052,7 @@ var import_jsx_runtime13;
 var init_Checkbox2 = __esm({
   "../../ui/src/components/Checkbox/Checkbox.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Checkbox();
     import_jsx_runtime13 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22412,7 +23062,7 @@ var init_Checkbox2 = __esm({
 var init_Checkbox3 = __esm({
   "../../ui/src/components/Checkbox/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Checkbox2();
   }
 });
@@ -22428,7 +23078,7 @@ var import_react, import_jsx_runtime14;
 var init_HighlightedCode2 = __esm({
   "../../ui/src/components/HighlightedCode/HighlightedCode.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react = __toESM(require_react(), 1);
     init_HighlightedCode();
     // biome-ignore lint/security/noDangerouslySetInnerHtml: Shiki generates this HTML from escaped source code.
@@ -22447,7 +23097,7 @@ var import_react2, import_jsx_runtime15;
 var init_CodeViewer2 = __esm({
   "../../ui/src/components/CodeViewer/CodeViewer.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react2 = __toESM(require_react(), 1);
     init_CodeViewer();
     import_jsx_runtime15 = __toESM(require_jsx_runtime(), 1);
@@ -22458,7 +23108,7 @@ var init_CodeViewer2 = __esm({
 var init_CodeViewer3 = __esm({
   "../../ui/src/components/CodeViewer/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_CodeViewer2();
   }
 });
@@ -22474,7 +23124,7 @@ var import_react3, import_jsx_runtime16;
 var init_ContentTabs2 = __esm({
   "../../ui/src/components/ContentTabs/ContentTabs.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react3 = __toESM(require_react(), 1);
     init_ContentTabs();
     import_jsx_runtime16 = __toESM(require_jsx_runtime(), 1);
@@ -22485,7 +23135,7 @@ var init_ContentTabs2 = __esm({
 var init_ContentTabs3 = __esm({
   "../../ui/src/components/ContentTabs/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_ContentTabs2();
   }
 });
@@ -22495,7 +23145,7 @@ var import_jsx_runtime17;
 var init_CountValue = __esm({
   "../../ui/src/components/CountValue/CountValue.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_jsx_runtime17 = __toESM(require_jsx_runtime(), 1);
   }
 });
@@ -22504,7 +23154,7 @@ var init_CountValue = __esm({
 var init_CountValue2 = __esm({
   "../../ui/src/components/CountValue/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_CountValue();
   }
 });
@@ -22520,7 +23170,7 @@ var import_jsx_runtime18;
 var init_ContractChip2 = __esm({
   "../../ui/src/components/ContractChip/ContractChip.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_ContractChip();
     import_jsx_runtime18 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22530,7 +23180,7 @@ var init_ContractChip2 = __esm({
 var init_ContractChip3 = __esm({
   "../../ui/src/components/ContractChip/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_ContractChip2();
   }
 });
@@ -22597,7 +23247,7 @@ var import_jsx_runtime19, alignClassNames, layoutClassNames, toneClassNames, var
 var init_DataTable2 = __esm({
   "../../ui/src/components/DataTable/DataTable.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_DataTable();
     import_jsx_runtime19 = __toESM(require_jsx_runtime(), 1);
     alignClassNames = {
@@ -22627,7 +23277,7 @@ var init_DataTable2 = __esm({
 var init_DataTable3 = __esm({
   "../../ui/src/components/DataTable/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_DataTable2();
   }
 });
@@ -22636,7 +23286,7 @@ var init_DataTable3 = __esm({
 var init_time = __esm({
   "../../ui/src/lib/time.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -22651,7 +23301,7 @@ var import_jsx_runtime20;
 var init_DateTime2 = __esm({
   "../../ui/src/components/DateTime/DateTime.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_DateTime();
     import_jsx_runtime20 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22661,7 +23311,7 @@ var init_DateTime2 = __esm({
 var init_DateTime3 = __esm({
   "../../ui/src/components/DateTime/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_DateTime2();
   }
 });
@@ -22677,7 +23327,7 @@ var import_jsx_runtime21;
 var init_Duration2 = __esm({
   "../../ui/src/components/Duration/Duration.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Duration();
     import_jsx_runtime21 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22687,7 +23337,7 @@ var init_Duration2 = __esm({
 var init_Duration3 = __esm({
   "../../ui/src/components/Duration/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Duration2();
   }
 });
@@ -22703,7 +23353,7 @@ var import_jsx_runtime22;
 var init_EmptyState2 = __esm({
   "../../ui/src/components/EmptyState/EmptyState.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_EmptyState();
     import_jsx_runtime22 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22713,7 +23363,7 @@ var init_EmptyState2 = __esm({
 var init_EmptyState3 = __esm({
   "../../ui/src/components/EmptyState/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_EmptyState2();
   }
 });
@@ -22723,7 +23373,7 @@ var import_jsx_runtime23;
 var init_GramAmount = __esm({
   "../../ui/src/components/GramAmount/GramAmount.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_jsx_runtime23 = __toESM(require_jsx_runtime(), 1);
   }
 });
@@ -22732,7 +23382,7 @@ var init_GramAmount = __esm({
 var init_GramAmount2 = __esm({
   "../../ui/src/components/GramAmount/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_GramAmount();
   }
 });
@@ -22748,7 +23398,7 @@ var import_jsx_runtime24;
 var init_Disclosure2 = __esm({
   "../../ui/src/components/Disclosure/Disclosure.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Disclosure();
     import_jsx_runtime24 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22758,7 +23408,7 @@ var init_Disclosure2 = __esm({
 var init_Disclosure3 = __esm({
   "../../ui/src/components/Disclosure/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Disclosure2();
   }
 });
@@ -22774,7 +23424,7 @@ var import_jsx_runtime25;
 var init_DisclosureToggle2 = __esm({
   "../../ui/src/components/DisclosureToggle/DisclosureToggle.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_DisclosureToggle();
     import_jsx_runtime25 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22784,7 +23434,7 @@ var init_DisclosureToggle2 = __esm({
 var init_DisclosureToggle3 = __esm({
   "../../ui/src/components/DisclosureToggle/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_DisclosureToggle2();
   }
 });
@@ -22800,7 +23450,7 @@ var import_jsx_runtime26;
 var init_Dialog2 = __esm({
   "../../ui/src/components/Dialog/Dialog.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Dialog();
     import_jsx_runtime26 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22810,7 +23460,7 @@ var init_Dialog2 = __esm({
 var init_Dialog3 = __esm({
   "../../ui/src/components/Dialog/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Dialog2();
   }
 });
@@ -22826,7 +23476,7 @@ var import_react4, import_jsx_runtime27;
 var init_Popover2 = __esm({
   "../../ui/src/components/Popover/Popover.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react4 = __toESM(require_react(), 1);
     init_Popover();
     import_jsx_runtime27 = __toESM(require_jsx_runtime(), 1);
@@ -22837,7 +23487,7 @@ var init_Popover2 = __esm({
 var init_Popover3 = __esm({
   "../../ui/src/components/Popover/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Popover2();
   }
 });
@@ -22853,7 +23503,7 @@ var import_jsx_runtime28;
 var init_ExitCodeChip2 = __esm({
   "../../ui/src/components/ExitCodeChip/ExitCodeChip.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_ExitCodeChip();
     import_jsx_runtime28 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22863,7 +23513,7 @@ var init_ExitCodeChip2 = __esm({
 var init_ExitCodeChip3 = __esm({
   "../../ui/src/components/ExitCodeChip/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_ExitCodeChip2();
   }
 });
@@ -22872,7 +23522,7 @@ var init_ExitCodeChip3 = __esm({
 var init_highlighter = __esm({
   "../../ui/src/components/HighlightedCode/highlighter.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -22880,7 +23530,7 @@ var init_highlighter = __esm({
 var init_HighlightedCode3 = __esm({
   "../../ui/src/components/HighlightedCode/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_HighlightedCode2();
     init_highlighter();
   }
@@ -22897,7 +23547,7 @@ var import_react5, import_jsx_runtime29;
 var init_IdeSelector2 = __esm({
   "../../ui/src/components/IdeSelector/IdeSelector.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react5 = __toESM(require_react(), 1);
     init_IdeSelector();
     import_jsx_runtime29 = __toESM(require_jsx_runtime(), 1);
@@ -22908,7 +23558,7 @@ var init_IdeSelector2 = __esm({
 var init_IdeSelector3 = __esm({
   "../../ui/src/components/IdeSelector/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_IdeSelector2();
   }
 });
@@ -22924,7 +23574,7 @@ var import_jsx_runtime30;
 var init_InfoPopover2 = __esm({
   "../../ui/src/components/InfoPopover/InfoPopover.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_InfoPopover();
     import_jsx_runtime30 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22934,7 +23584,7 @@ var init_InfoPopover2 = __esm({
 var init_InfoPopover3 = __esm({
   "../../ui/src/components/InfoPopover/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_InfoPopover2();
   }
 });
@@ -22944,7 +23594,7 @@ var import_react6, import_jsx_runtime31, sizeClassNames2;
 var init_Input2 = __esm({
   "../../ui/src/components/Input/Input.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react6 = __toESM(require_react(), 1);
     init_Input();
     import_jsx_runtime31 = __toESM(require_jsx_runtime(), 1);
@@ -22960,7 +23610,7 @@ var init_Input2 = __esm({
 var init_Input3 = __esm({
   "../../ui/src/components/Input/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Input2();
   }
 });
@@ -22976,7 +23626,7 @@ var import_jsx_runtime32;
 var init_InlineLoader2 = __esm({
   "../../ui/src/components/InlineLoader/InlineLoader.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_InlineLoader();
     import_jsx_runtime32 = __toESM(require_jsx_runtime(), 1);
   }
@@ -22986,7 +23636,7 @@ var init_InlineLoader2 = __esm({
 var init_InlineLoader3 = __esm({
   "../../ui/src/components/InlineLoader/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_InlineLoader2();
   }
 });
@@ -23013,7 +23663,7 @@ var import_jsx_runtime33, toneClassNames2;
 var init_MarkdownText2 = __esm({
   "../../ui/src/components/MarkdownText/MarkdownText.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_MarkdownText();
     import_jsx_runtime33 = __toESM(require_jsx_runtime(), 1);
     toneClassNames2 = {
@@ -23027,7 +23677,7 @@ var init_MarkdownText2 = __esm({
 var init_MarkdownText3 = __esm({
   "../../ui/src/components/MarkdownText/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_MarkdownText2();
   }
 });
@@ -23043,7 +23693,7 @@ var import_jsx_runtime34;
 var init_ModeViewer2 = __esm({
   "../../ui/src/components/ModeViewer/ModeViewer.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_ModeViewer();
     import_jsx_runtime34 = __toESM(require_jsx_runtime(), 1);
   }
@@ -23053,7 +23703,7 @@ var init_ModeViewer2 = __esm({
 var init_parser = __esm({
   "../../ui/src/components/ModeViewer/ChangeLibraryModeViewer/parser.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -23062,7 +23712,7 @@ var import_jsx_runtime35;
 var init_ChangeLibraryModeViewer = __esm({
   "../../ui/src/components/ModeViewer/ChangeLibraryModeViewer/ChangeLibraryModeViewer.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_jsx_runtime35 = __toESM(require_jsx_runtime(), 1);
   }
 });
@@ -23071,7 +23721,7 @@ var init_ChangeLibraryModeViewer = __esm({
 var init_ChangeLibraryModeViewer2 = __esm({
   "../../ui/src/components/ModeViewer/ChangeLibraryModeViewer/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_ChangeLibraryModeViewer();
     init_parser();
   }
@@ -23081,7 +23731,7 @@ var init_ChangeLibraryModeViewer2 = __esm({
 var init_parser2 = __esm({
   "../../ui/src/components/ModeViewer/ReserveModeViewer/parser.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -23090,7 +23740,7 @@ var import_jsx_runtime36;
 var init_ReserveModeViewer = __esm({
   "../../ui/src/components/ModeViewer/ReserveModeViewer/ReserveModeViewer.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_jsx_runtime36 = __toESM(require_jsx_runtime(), 1);
   }
 });
@@ -23099,7 +23749,7 @@ var init_ReserveModeViewer = __esm({
 var init_ReserveModeViewer2 = __esm({
   "../../ui/src/components/ModeViewer/ReserveModeViewer/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_parser2();
     init_ReserveModeViewer();
   }
@@ -23109,7 +23759,7 @@ var init_ReserveModeViewer2 = __esm({
 var init_parser3 = __esm({
   "../../ui/src/components/ModeViewer/SendModeViewer/parser.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -23118,7 +23768,7 @@ var import_jsx_runtime37;
 var init_SendModeViewer = __esm({
   "../../ui/src/components/ModeViewer/SendModeViewer/SendModeViewer.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_jsx_runtime37 = __toESM(require_jsx_runtime(), 1);
   }
 });
@@ -23127,7 +23777,7 @@ var init_SendModeViewer = __esm({
 var init_SendModeViewer2 = __esm({
   "../../ui/src/components/ModeViewer/SendModeViewer/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_parser3();
     init_SendModeViewer();
   }
@@ -23137,7 +23787,7 @@ var init_SendModeViewer2 = __esm({
 var init_ModeViewer3 = __esm({
   "../../ui/src/components/ModeViewer/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_ChangeLibraryModeViewer2();
     init_ModeViewer2();
     init_ReserveModeViewer2();
@@ -23156,7 +23806,7 @@ var import_react7, import_jsx_runtime38;
 var init_MultiValueInput2 = __esm({
   "../../ui/src/components/MultiValueInput/MultiValueInput.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react7 = __toESM(require_react(), 1);
     init_MultiValueInput();
     import_jsx_runtime38 = __toESM(require_jsx_runtime(), 1);
@@ -23167,7 +23817,7 @@ var init_MultiValueInput2 = __esm({
 var init_MultiValueInput3 = __esm({
   "../../ui/src/components/MultiValueInput/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_MultiValueInput2();
   }
 });
@@ -23183,7 +23833,7 @@ var import_jsx_runtime39;
 var init_NftChip2 = __esm({
   "../../ui/src/components/NftChip/NftChip.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_NftChip();
     import_jsx_runtime39 = __toESM(require_jsx_runtime(), 1);
   }
@@ -23193,7 +23843,7 @@ var init_NftChip2 = __esm({
 var init_NftChip3 = __esm({
   "../../ui/src/components/NftChip/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_NftChip2();
   }
 });
@@ -23209,7 +23859,7 @@ var import_jsx_runtime40;
 var init_OpcodeChip2 = __esm({
   "../../ui/src/components/OpcodeChip/OpcodeChip.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_OpcodeChip();
     import_jsx_runtime40 = __toESM(require_jsx_runtime(), 1);
   }
@@ -23219,7 +23869,7 @@ var init_OpcodeChip2 = __esm({
 var init_OpcodeChip3 = __esm({
   "../../ui/src/components/OpcodeChip/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_OpcodeChip2();
   }
 });
@@ -23235,7 +23885,7 @@ var import_react8, import_jsx_runtime41;
 var init_Pagination2 = __esm({
   "../../ui/src/components/Pagination/Pagination.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react8 = __toESM(require_react(), 1);
     init_Pagination();
     import_jsx_runtime41 = __toESM(require_jsx_runtime(), 1);
@@ -23246,7 +23896,7 @@ var init_Pagination2 = __esm({
 var init_Pagination3 = __esm({
   "../../ui/src/components/Pagination/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Pagination2();
   }
 });
@@ -23273,7 +23923,7 @@ var import_jsx_runtime42, variantClassNames4;
 var init_PillTabs2 = __esm({
   "../../ui/src/components/PillTabs/PillTabs.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_PillTabs();
     import_jsx_runtime42 = __toESM(require_jsx_runtime(), 1);
     variantClassNames4 = {
@@ -23288,7 +23938,7 @@ var init_PillTabs2 = __esm({
 var init_PillTabs3 = __esm({
   "../../ui/src/components/PillTabs/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_PillTabs2();
   }
 });
@@ -23304,7 +23954,7 @@ var import_jsx_runtime43;
 var init_VisuallyGroupedNumber2 = __esm({
   "../../ui/src/components/VisuallyGroupedNumber/VisuallyGroupedNumber.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_VisuallyGroupedNumber();
     import_jsx_runtime43 = __toESM(require_jsx_runtime(), 1);
   }
@@ -23314,7 +23964,7 @@ var init_VisuallyGroupedNumber2 = __esm({
 var init_scalarDisplay = __esm({
   "../../ui/src/components/ParsedValueView/scalarDisplay.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -23329,7 +23979,7 @@ var import_react9, import_jsx_runtime44;
 var init_ParsedValueView2 = __esm({
   "../../ui/src/components/ParsedValueView/ParsedValueView.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react9 = __toESM(require_react(), 1);
     init_ParsedValueView();
     import_jsx_runtime44 = __toESM(require_jsx_runtime(), 1);
@@ -23347,7 +23997,7 @@ var import_react10, import_jsx_runtime45;
 var init_ParsedBodySection2 = __esm({
   "../../ui/src/components/ParsedBodySection/ParsedBodySection.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react10 = __toESM(require_react(), 1);
     init_ParsedBodySection();
     import_jsx_runtime45 = __toESM(require_jsx_runtime(), 1);
@@ -23358,7 +24008,7 @@ var init_ParsedBodySection2 = __esm({
 var init_ParsedBodySection3 = __esm({
   "../../ui/src/components/ParsedBodySection/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_ParsedBodySection2();
   }
 });
@@ -23367,7 +24017,7 @@ var init_ParsedBodySection3 = __esm({
 var init_buildStorageDiff = __esm({
   "../../ui/src/components/ParsedValueDiffView/buildStorageDiff.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -23382,7 +24032,7 @@ var import_react11, import_jsx_runtime46;
 var init_ParsedValueDiffView2 = __esm({
   "../../ui/src/components/ParsedValueDiffView/ParsedValueDiffView.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react11 = __toESM(require_react(), 1);
     init_ParsedValueDiffView();
     import_jsx_runtime46 = __toESM(require_jsx_runtime(), 1);
@@ -23393,7 +24043,7 @@ var init_ParsedValueDiffView2 = __esm({
 var init_types = __esm({
   "../../ui/src/components/ParsedValueDiffView/types.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -23401,7 +24051,7 @@ var init_types = __esm({
 var init_ParsedValueDiffView3 = __esm({
   "../../ui/src/components/ParsedValueDiffView/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_buildStorageDiff();
     init_ParsedValueDiffView2();
     init_types();
@@ -23412,7 +24062,7 @@ var init_ParsedValueDiffView3 = __esm({
 var init_types2 = __esm({
   "../../ui/src/components/ParsedValueView/types.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -23420,7 +24070,7 @@ var init_types2 = __esm({
 var init_ParsedValueView3 = __esm({
   "../../ui/src/components/ParsedValueView/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_ParsedValueView2();
     init_scalarDisplay();
     init_types2();
@@ -23432,7 +24082,7 @@ var import_jsx_runtime47;
 var init_Percentage = __esm({
   "../../ui/src/components/Percentage/Percentage.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_jsx_runtime47 = __toESM(require_jsx_runtime(), 1);
   }
 });
@@ -23441,7 +24091,7 @@ var init_Percentage = __esm({
 var init_Percentage2 = __esm({
   "../../ui/src/components/Percentage/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Percentage();
   }
 });
@@ -23478,7 +24128,7 @@ var import_react12, import_jsx_runtime48, variantClassNames5;
 var init_RawDataBlock2 = __esm({
   "../../ui/src/components/RawDataBlock/RawDataBlock.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react12 = __toESM(require_react(), 1);
     init_RawDataBlock();
     import_jsx_runtime48 = __toESM(require_jsx_runtime(), 1);
@@ -23493,7 +24143,7 @@ var init_RawDataBlock2 = __esm({
 var init_RawDataBlock3 = __esm({
   "../../ui/src/components/RawDataBlock/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_RawDataBlock2();
   }
 });
@@ -23509,7 +24159,7 @@ var import_react13, import_jsx_runtime49;
 var init_SearchInput2 = __esm({
   "../../ui/src/components/SearchInput/SearchInput.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react13 = __toESM(require_react(), 1);
     init_SearchInput();
     import_jsx_runtime49 = __toESM(require_jsx_runtime(), 1);
@@ -23520,7 +24170,7 @@ var init_SearchInput2 = __esm({
 var init_SearchInput3 = __esm({
   "../../ui/src/components/SearchInput/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_SearchInput2();
   }
 });
@@ -23551,7 +24201,7 @@ var import_react14, import_jsx_runtime50, sizeClassNames3;
 var init_Select2 = __esm({
   "../../ui/src/components/Select/Select.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react14 = __toESM(require_react(), 1);
     init_Select();
     import_jsx_runtime50 = __toESM(require_jsx_runtime(), 1);
@@ -23567,7 +24217,7 @@ var init_Select2 = __esm({
 var init_Select3 = __esm({
   "../../ui/src/components/Select/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_Select2();
   }
 });
@@ -23583,7 +24233,7 @@ var import_jsx_runtime51;
 var init_TechnicalValue2 = __esm({
   "../../ui/src/components/TechnicalValue/TechnicalValue.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_TechnicalValue();
     import_jsx_runtime51 = __toESM(require_jsx_runtime(), 1);
   }
@@ -23593,7 +24243,7 @@ var init_TechnicalValue2 = __esm({
 var init_TechnicalValue3 = __esm({
   "../../ui/src/components/TechnicalValue/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_TechnicalValue2();
   }
 });
@@ -23603,7 +24253,7 @@ var import_jsx_runtime52;
 var init_SourceLocationValue = __esm({
   "../../ui/src/components/SourceLocationValue/SourceLocationValue.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_jsx_runtime52 = __toESM(require_jsx_runtime(), 1);
   }
 });
@@ -23612,7 +24262,7 @@ var init_SourceLocationValue = __esm({
 var init_SourceLocationValue2 = __esm({
   "../../ui/src/components/SourceLocationValue/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_SourceLocationValue();
   }
 });
@@ -23621,7 +24271,7 @@ var init_SourceLocationValue2 = __esm({
 var init_Theme = __esm({
   "../../ui/src/components/Theme/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
   }
 });
 
@@ -23636,7 +24286,7 @@ var import_jsx_runtime53;
 var init_ThemeSwitch2 = __esm({
   "../../ui/src/components/ThemeSwitch/ThemeSwitch.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_ThemeSwitch();
     import_jsx_runtime53 = __toESM(require_jsx_runtime(), 1);
   }
@@ -23646,7 +24296,7 @@ var init_ThemeSwitch2 = __esm({
 var init_ThemeSwitch3 = __esm({
   "../../ui/src/components/ThemeSwitch/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_ThemeSwitch2();
   }
 });
@@ -23662,7 +24312,7 @@ var import_react15, import_jsx_runtime54, ToastContext;
 var init_toast = __esm({
   "../../ui/src/components/Toast/toast.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     import_react15 = __toESM(require_react(), 1);
     init_Toast();
     import_jsx_runtime54 = __toESM(require_jsx_runtime(), 1);
@@ -23674,7 +24324,7 @@ var init_toast = __esm({
 var init_Toast2 = __esm({
   "../../ui/src/components/Toast/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_toast();
   }
 });
@@ -23683,7 +24333,7 @@ var init_Toast2 = __esm({
 var init_VisuallyGroupedNumber3 = __esm({
   "../../ui/src/components/VisuallyGroupedNumber/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_VisuallyGroupedNumber2();
   }
 });
@@ -23692,7 +24342,7 @@ var init_VisuallyGroupedNumber3 = __esm({
 var init_components = __esm({
   "../../ui/src/components/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_AddressChip3();
     init_Banner3();
     init_BlockChip3();
@@ -23754,7 +24404,7 @@ var init_components = __esm({
 var init_src = __esm({
   "../../ui/src/index.ts"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_components();
     init_cx();
     init_formatting();
@@ -23773,9 +24423,9 @@ var init_data_abis = __esm({
 // ../src/og/AccountOgImage.tsx
 function AccountOgImage({
   preview,
-  variant = "account"
+  variant: variant2 = "account"
 }) {
-  const isPagePreview = variant === "page";
+  const isPagePreview = variant2 === "page";
   return /* @__PURE__ */ (0, import_jsx_runtime55.jsxs)(
     "div",
     {
@@ -23984,8 +24634,8 @@ function Avatar({ preview }) {
     }
   );
 }
-function Badge({ label, variant }) {
-  const isSuccess = variant === "success";
+function Badge({ label, variant: variant2 }) {
+  const isSuccess = variant2 === "success";
   return /* @__PURE__ */ (0, import_jsx_runtime55.jsx)(
     "div",
     {
@@ -24040,7 +24690,7 @@ var import_jsx_runtime55;
 var init_AccountOgImage = __esm({
   "../src/og/AccountOgImage.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_src();
     import_jsx_runtime55 = __toESM(require_jsx_runtime(), 1);
     __name(AccountOgImage, "AccountOgImage");
@@ -24113,7 +24763,7 @@ var import_jsx_runtime56, PAGE_OG_PREVIEWS;
 var init_PageOgImage = __esm({
   "../src/og/PageOgImage.tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_AccountOgImage();
     import_jsx_runtime56 = __toESM(require_jsx_runtime(), 1);
     PAGE_OG_PREVIEWS = {
@@ -24616,8 +25266,8 @@ function previewFromResponses(address, accountStates, jettonMasters) {
   const jettonMaster = recordValue(jettonMasterRecords?.[0]);
   const tokenInfo = tokenInfoForAddress(recordValue(accountStates.metadata), accountAddress) || tokenInfoForAddress(recordValue(jettonMasters?.metadata), accountAddress);
   const jettonContent = {
-    ...isRecord5(jettonMaster?.jetton_content) ? jettonMaster.jetton_content : {},
-    ...isRecord5(tokenInfo?.extra) ? tokenInfo.extra : {}
+    ...isRecord2(jettonMaster?.jetton_content) ? jettonMaster.jetton_content : {},
+    ...isRecord2(tokenInfo?.extra) ? tokenInfo.extra : {}
   };
   const name = stringValue(jettonContent.name) || stringValue(tokenInfo?.name) || stringValue(addressBook?.domain) || fallback.title;
   const symbol = stringValue(jettonContent.symbol) || stringValue(tokenInfo?.symbol);
@@ -24716,12 +25366,12 @@ function isDataImage(value) {
   return value.startsWith("data:image/");
 }
 function recordValue(value) {
-  return isRecord5(value) ? value : void 0;
+  return isRecord2(value) ? value : void 0;
 }
 function arrayValue(value) {
   return Array.isArray(value) ? value : void 0;
 }
-function isRecord5(value) {
+function isRecord2(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 function stringValue(value) {
@@ -24742,7 +25392,7 @@ var import_jsx_runtime57, OG_IMAGE_VERSION, OG_IMAGE_WIDTH, OG_IMAGE_HEIGHT, ABI
 var init_path = __esm({
   "[[path]].tsx"() {
     "use strict";
-    init_functionsRoutes_0_650986570513036();
+    init_functionsRoutes_0_26758600743728933();
     init_api();
     init_src();
     init_data_abis();
@@ -24786,7 +25436,7 @@ var init_path = __esm({
     __name(isDataImage, "isDataImage");
     __name(recordValue, "recordValue");
     __name(arrayValue, "arrayValue");
-    __name(isRecord5, "isRecord");
+    __name(isRecord2, "isRecord");
     __name(stringValue, "stringValue");
     __name(absoluteUrl, "absoluteUrl");
     __name(withHeader, "withHeader");
@@ -24794,10 +25444,10 @@ var init_path = __esm({
   }
 });
 
-// ../.wrangler/tmp/pages-1jZdPH/functionsRoutes-0.650986570513036.mjs
+// ../.wrangler/tmp/pages-w8YjdL/functionsRoutes-0.26758600743728933.mjs
 var routes;
-var init_functionsRoutes_0_650986570513036 = __esm({
-  "../.wrangler/tmp/pages-1jZdPH/functionsRoutes-0.650986570513036.mjs"() {
+var init_functionsRoutes_0_26758600743728933 = __esm({
+  "../.wrangler/tmp/pages-w8YjdL/functionsRoutes-0.26758600743728933.mjs"() {
     "use strict";
     init_getBlockTransactions();
     init_getShards();
@@ -24869,10 +25519,10 @@ var init_functionsRoutes_0_650986570513036 = __esm({
 });
 
 // ../../../node_modules/.bun/wrangler@4.102.0+acbd2503149e7860/node_modules/wrangler/templates/pages-template-worker.ts
-init_functionsRoutes_0_650986570513036();
+init_functionsRoutes_0_26758600743728933();
 
 // ../../../node_modules/.bun/path-to-regexp@6.3.0/node_modules/path-to-regexp/dist.es2015/index.js
-init_functionsRoutes_0_650986570513036();
+init_functionsRoutes_0_26758600743728933();
 function lexer(str) {
   var tokens = [];
   var i2 = 0;
