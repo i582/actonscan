@@ -215,6 +215,11 @@
   color: var(--acton-color-text);
   font-weight: inherit;
 }
+.AddressChip_addressInline {
+  padding-block: 0;
+  padding-inline: var(--acton-space-1);
+  margin-inline: calc(-1 * var(--acton-space-1));
+}
 .AddressChip_addressHighlighted {
   background: color-mix(in srgb, var(--acton-color-accent) 18%, transparent);
 }
@@ -3928,6 +3933,7 @@
   width: min(50rem, 100%);
   grid-template-columns: minmax(0, 1fr);
   row-gap: 0;
+  padding-block-end: 0;
 }
 .ParsedValueView_parsedEntryKey {
   align-self: center;
@@ -4057,6 +4063,9 @@
 .ParsedValueView_parsedMapEntry + .ParsedValueView_parsedMapEntry {
   padding-block-start: var(--acton-space-2);
   border-block-start: 1px solid var(--acton-color-border);
+}
+.ParsedValueView_parsedMapEntry:last-child {
+  padding-block-end: 0;
 }
 .ParsedValueView_parsedMapSection {
   display: flex;
