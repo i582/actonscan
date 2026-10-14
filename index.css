@@ -65,7 +65,7 @@
   pointer-events: none;
 }
 .InlineActions_visibilityHover:hover .InlineActions_actions,
-.InlineActions_visibilityHover:focus-within .InlineActions_actions {
+.InlineActions_visibilityHover:has(:focus-visible) .InlineActions_actions {
   opacity: 1;
   pointer-events: auto;
 }
@@ -1857,20 +1857,29 @@
   max-width: 100%;
   min-width: 0;
   gap: 0;
+  border-radius: var(--acton-radius-control-sm);
   color: var(--acton-color-text);
   font-family: var(--acton-font-sans);
   font-synthesis: none;
-  transition: padding-inline-end var(--acton-duration-fast) var(--acton-ease-standard);
 }
-.ContractChip_contractChipActions:hover,
-.ContractChip_contractChipActions:focus-within {
-  padding-inline-end: 1.25rem;
-}
-.ContractChip_copyAction {
+.ContractChip_copyActions {
   position: absolute;
-  inset-block-start: 50%;
+  inset-block: 0;
   inset-inline-end: 0;
-  transform: translateY(-50%);
+  padding-inline-start: 1.5rem;
+  padding-inline-end: var(--acton-space-1);
+  border-start-end-radius: inherit;
+  border-end-end-radius: inherit;
+  background:
+    linear-gradient(
+      to right,
+      transparent,
+      var(--acton-color-surface-raised) 60%);
+}
+@media (hover: none), (pointer: coarse) {
+  .ContractChip_contractChipActions {
+    padding-inline-end: 2.75rem;
+  }
 }
 .ContractChip_contractChip {
   appearance: none;
@@ -3597,7 +3606,7 @@
 .NftChip_nftChip {
   display: inline-flex;
   align-items: center;
-  gap: var(--acton-space-1);
+  gap: var(--acton-space-2);
   min-width: 0;
   max-width: 100%;
   padding: 2px var(--acton-space-2) 2px 3px;
@@ -3929,11 +3938,25 @@
   text-align: start;
   white-space: nowrap;
 }
+.ParsedValueView_parsedEntryKeyNested {
+  align-self: start;
+}
 .ParsedValueView_parsedEntryValue {
   min-width: 0;
   align-self: center;
   color: var(--acton-color-text);
   font-size: var(--acton-font-size-sm);
+  line-height: 1.35;
+}
+.ParsedValueView_parsedLinkedEntryValue {
+  display: flex;
+  align-items: center;
+}
+.ParsedValueView_parsedEmptyMapCell {
+  font-size: var(--acton-font-size-xs);
+  line-height: 1.35;
+}
+.ParsedValueView_parsedEmptyMapCell .ParsedValueView_parsedBadge {
   line-height: 1.35;
 }
 .ParsedValueView_parsedLargeCollectionValue {
@@ -3971,6 +3994,52 @@
   color: var(--acton-parsed-value-tone, inherit);
   font-family: var(--acton-font-sans);
   font-size: var(--acton-parsed-value-font-size, inherit);
+}
+.ParsedValueView_parsedDomainName,
+.ParsedValueView_parsedDomainLink,
+.ParsedValueView_parsedExternalLink,
+.ParsedValueView_parsedExternalUrl {
+  font-family: var(--acton-font-sans);
+  font-size: var(--acton-parsed-value-font-size, inherit);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.ParsedValueView_parsedDomainName,
+.ParsedValueView_parsedDomainLink {
+  font-size: var(--acton-font-size-xs);
+}
+.ParsedValueView_parsedDomainName,
+.ParsedValueView_parsedExternalUrl {
+  color: var(--acton-color-text);
+}
+.ParsedValueView_parsedExternalLink {
+  min-width: 0;
+  color: var(--acton-color-accent);
+  text-decoration: none;
+}
+.ParsedValueView_parsedExternalLink:hover {
+  text-decoration: underline;
+}
+.ParsedValueView_parsedExternalLink:focus-visible {
+  outline: 2px solid var(--acton-color-focus-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.ParsedValueView_parsedDomainLink {
+  color: var(--acton-color-accent);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  text-align: start;
+}
+.ParsedValueView_parsedDomainLink:hover {
+  text-decoration: underline;
+}
+.ParsedValueView_parsedDomainLink:focus-visible {
+  outline: 2px solid var(--acton-color-focus-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 .ParsedValueView_parsedNull,
 .ParsedValueView_parsedVoid,
@@ -4170,6 +4239,9 @@
   line-height: 1.4;
   white-space: nowrap;
 }
+.ParsedValueDiffView_entryKeyNested {
+  align-self: start;
+}
 .ParsedValueDiffView_entryValue {
   min-width: 0;
   align-self: center;
@@ -4266,23 +4338,23 @@
   align-items: center;
   padding: 0 var(--acton-space-2);
   border: 1px solid transparent;
-  border-radius: var(--acton-radius-round);
+  border-radius: var(--acton-radius-control-sm);
   line-height: 1;
 }
 .ParsedValueDiffView_diffPillBefore {
   --acton-parsed-value-tone: var(--acton-color-diff-removed-text);
-  border-color: color-mix(in srgb, var(--acton-color-diff-removed) 24%, transparent);
   background: var(--acton-color-diff-removed-surface);
   color: var(--acton-color-diff-removed-text);
 }
 .ParsedValueDiffView_diffPillAfter {
   --acton-parsed-value-tone: var(--acton-color-diff-added-text);
-  border-color: color-mix(in srgb, var(--acton-color-diff-added) 24%, transparent);
   background: var(--acton-color-diff-added-surface);
   color: var(--acton-color-diff-added-text);
 }
+.ParsedValueDiffView_diffPillAddress {
+  padding-inline-start: 0;
+}
 .ParsedValueDiffView_diffPillNeutral {
-  border-color: var(--acton-color-border);
   background: var(--acton-color-surface-hover);
   color: var(--acton-color-text-muted);
 }
@@ -4292,6 +4364,20 @@
   font-family: var(--acton-font-mono);
   font-size: var(--acton-font-size-xs);
   line-height: 1.4;
+}
+.ParsedValueDiffView_emptyMapValue {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--acton-space-2);
+}
+.ParsedValueDiffView_emptyMapValue .ParsedValueDiffView_typeLabel,
+.ParsedValueDiffView_emptyMapValue .ParsedValueDiffView_emptyValue {
+  align-self: center;
+}
+.ParsedValueDiffView_emptyMapValue .ParsedValueDiffView_emptyValue {
+  font-family: var(--acton-font-sans);
+  font-weight: var(--acton-font-weight-medium);
 }
 .ParsedValueDiffView_diffArrow,
 .ParsedValueDiffView_diffPlaceholder {
